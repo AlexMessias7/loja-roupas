@@ -37,7 +37,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false, // melhor não salvar sessões vazias
   store: MongoStore.create({
-    mongoUrl: "mongodb://localhost:27017/loja-roupas",
+    mongoUrl: process.env.MONGO_URI,
   }),
   cookie: {
     httpOnly: true,
