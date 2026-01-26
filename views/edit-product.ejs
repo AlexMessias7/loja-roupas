@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Produto - CREED GODS</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Painel de Administração</h1>
+            <nav>
+                <ul>
+                    <li><a href="/inicio">Início</a></li>
+                    <li><a href="/admin">Cadastro</a></li>
+                    <li><a href="/admin/produtos">Gerenciar Produtos</a></li>
+                    <li><a href="/admin/entrada">Entrada</a></li>
+                    <li><a href="/admin/pedidos">Pedidos</a></li>
+                    <li><a href="/admin/relatorios">Relatórios</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="admin-section">
+        <div class="container">
+            <h2>Editar Produto</h2>
+            <form action="/admin/produtos/<%= product._id %>?_method=PUT" method="post" enctype="multipart/form-data">
+                
+                <div class="form-group">
+                    <label for="name">Nome do Produto:</label>
+                    <input type="text" id="name" name="name" value="<%= product.name %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="originalPrice">Preço Original:</label>
+                    <input type="number" id="originalPrice" name="originalPrice" step="0.01" value="<%= product.originalPrice %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="discountedPrice">Preço com Desconto:</label>
+                    <input type="number" id="discountedPrice" name="discountedPrice" step="0.01" value="<%= product.discountedPrice %>">
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Imagem Principal:</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                    <% if (product.image) { %>
+                        <img src="<%= product.image %>" alt="<%= product.name %>" class="current-image" style="width:80px; margin-top:10px;">
+                    <% } %>
+                </div>
+
+                <div class="form-group">
+                    <label for="extraImages">Atualizar Imagens Adicionais:</label>
+                    <input type="file" name="extraImages" accept="image/*" multiple>
+                    <% if (product.extraImages && product.extraImages.length > 0) { %>
+                        <div class="imagem-existente">
+                            <% product.extraImages.forEach(function(image) { %>
+                                <img src="<%= image %>" alt="Imagem Adicional" width="80">
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </div>                
+
+                <div class="form-group">
+                    <label for="gender">Gênero:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="Masculino" <%= product.gender === 'Masculino' ? 'selected' : '' %>>Masculino</option>
+                        <option value="Feminino" <%= product.gender === 'Feminino' ? 'selected' : '' %>>Feminino</option>
+                        <option value="Unissex" <%= product.gender === 'Unissex' ? 'selected' : '' %>>Unissex</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sizes">Tamanhos:</label>
+                    <div>
+                        <% const sizes = product.sizes || []; %>
+                        <label><input type="checkbox" name="sizes" value="P" <%= sizes.includes('P') ? 'checked' : '' %>> P</label>
+                        <label><input type="checkbox" name="sizes" value="M" <%= sizes.includes('M') ? 'checked' : '' %>> M</label>
+                        <label><input type="checkbox" name="sizes" value="G" <%= sizes.includes('G') ? 'checked' : '' %>> G</label>
+                        <label><input type="checkbox" name="sizes" value="GG" <%= sizes.includes('GG') ? 'checked' : '' %>> GG</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="maxInstallments">Número Máximo de Parcelas:</label>
+                    <input type="number" id="maxInstallments" name="maxInstallments" value="<%= product.maxInstallments %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="stockMax">Estoque Máximo:</label>
+                    <input type="number" id="stockMax" name="stockMax" value="<%= product.stockMax %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="stockMin">Estoque Mínimo:</label>
+                    <input type="number" id="stockMin" name="stockMin" value="<%= product.stockMin %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="isFeatured">Destaque:</label>
+                    <input type="checkbox" id="isFeatured" name="isFeatured" <%= product.isFeatured ? 'checked' : '' %>>
+                </div>
+
+                <div class="form-group">
+                    <label for="isOnSale">Promoção:</label>
+                    <input type="checkbox" id="isOnSale" name="isOnSale" <%= product.isOnSale ? 'checked' : '' %>>
+                </div>
+
+                <button type="submit">Atualizar Produto</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CREED GODS. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

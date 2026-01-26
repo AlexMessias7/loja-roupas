@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREED GODS</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+</head>    
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container">
+            <img src="/images/logo.png" alt="Logo" class="logo">
+            <img src="/images/logo 1.png" alt="Logo_1" class="logo_1">
+            <div class="barra-pesquisa" role="search">
+            <input type="text" id="search-input" placeholder="O que você está procurando?" aria-label="Pesquisar produtos">
+            <i class="fa fa-search" id="search-btn" aria-label="Botão de pesquisa"></i>
+            <p id="search-feedback" style="display:none;"></p>
+            </div>
+
+            <div class="menu-navegacao">
+            <nav>
+                <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/produtos">Produtos</a></li>
+                <li><a href="/favoritos">Favoritos</a></li>
+                <li><a href="/promocoes">Promoções</a></li>
+                <li><a href="/area-cliente">Minha Área</a></li>
+
+                <% if (clienteLogado) { %>
+                    <li><a href="/logout-cliente">Sair</a></li>
+                <% } else { %>
+                    <li><a href="/login-cliente">Login</a></li>
+                <% } %>
+
+                <div class="carrinho-container">
+                    <i id="cartIcon" class="fa fa-shopping-cart"></i>
+                </div>
+                </ul>
+            </nav>
+            </div>
+    </header>   
+    
+    <div class="produto-detalhes">
+        <div class="container">
+            <!-- Miniaturas das Imagens -->
+            <div class="produto-galeria">
+                <% if (product.extraImages && product.extraImages.length > 0) { %>
+                    <% product.extraImages.slice(0, 3).forEach(function(image) { %>
+                        <div class="produto-miniatura">
+                            <img src="<%= image %>" alt="Miniatura do produto <%= product.name %>" class="miniatura-img">
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="produto-miniatura">
+                        <img src="/images/placeholder.png" alt="Nenhuma imagem disponível" class="miniatura-img">
+                    </div>
+                <% } %>
+            </div>                     
+    
+            <!-- Imagem Principal com botão de favorito -->
+            <div class="produto-imagem">
+            <img src="<%= product.image %>" alt="Imagem principal do produto <%= product.name %>">
+            <button 
+            class="favorito-btn-imagem" 
+            aria-label="Adicionar aos Favoritos" 
+            data-id="<%= product._id %>">
+            <i class="fa fa-heart" aria-hidden="true"></i>
+            </button>
+            </div>
+    
+            <!-- Informações do Produto -->
+            <div class="produto-info">
+                <h2 class="produto-nome"><%= product.name %></h2>
+                <% if (product.gender) { %>
+                    <p class="produto-genero">
+                        Gênero: <%= product.gender.charAt(0).toUpperCase() + product.gender.slice(1) %>
+                    </p>
+                <% } %>
+
+                <div class="botao-tabela-medidas">
+                <a href="#" class="btn btn-tabela-medidas" aria-label="Ver tabela de medidas">
+                    <i class="fa fa-info-circle" aria-hidden="true"></i> Tabela de Medidas
+                </a>
+                </div>
+
+                <div class="produto-tamanhos">
+                    <label for="tamanhos">Tamanhos:</label>
+                    <div class="tamanhos-opcoes">
+                        <% if (product.sizes && product.sizes.length > 0) { %>
+                            <% product.sizes.forEach(function(size) { %>
+                                <label class="size-button">
+                                    <input type="radio" name="size" value="<%= size %>" hidden required aria-label="Selecionar tamanho <%= size %>"> <%= size %>
+                                </label>
+                            <% }) %>
+                        <% } else { %>
+                            <span>Nenhum tamanho disponível</span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="bloco-compra">
+                    <p class="preco-destaque">
+                    R$ <%= product.discountedPrice ? product.discountedPrice.toFixed(2) : product.originalPrice.toFixed(2) %>
+                    </p>
+                    <p class="parcelamento">
+                    ou em até <%= product.maxInstallments %>x de R$ <%= product.installmentValue ? product.installmentValue.toFixed(2) : '' %> sem juros
+                    </p>
+
+                    <div class="botoes-compra">
+                        <button
+                            class="btn adicionar-carrinho-btn"
+                            aria-label="Adicionar produto <%= product.name %> ao carrinho"
+                            data-product-id="<%= product.id %>"
+                            data-product-name="<%= product.name %>"
+                            data-product-price="<%= product.discountedPrice ? product.discountedPrice : product.originalPrice %>"
+                            data-product-image="<%= product.image %>"
+                        >
+                            <i class="fa fa-shopping-cart" aria-hidden="true"></i> Adicionar ao Carrinho
+                        </button>
+
+                        <button
+                            class="btn comprar-btn"
+                            aria-label="Comprar produto <%= product.name %> agora"
+                            data-product-id="<%= product.id %>"
+                            data-product-name="<%= product.name %>"
+                            data-product-price="<%= product.discountedPrice ? product.discountedPrice : product.originalPrice %>"
+                            data-product-image="<%= product.image %>"
+                        >
+                            Comprar Agora
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de tabela -->
+    <div id="tabelaMedidasModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloTabelaMedidas">
+        <div class="modal-content">
+            <span class="close" aria-label="Fechar tabela">&times;</span>
+            <h2 id="tituloTabelaMedidas">Tabela de Medidas</h2>
+            <table class="tabela-medidas">
+                <thead>
+                    <tr>
+                        <th>Tamanho</th>
+                        <th>Busto (cm)</th>
+                        <th>Cintura (cm)</th>
+                        <th>Quadril (cm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>P</td><td>80-88</td><td>60-68</td><td>88-96</td></tr>
+                    <tr><td>M</td><td>88-96</td><td>68-76</td><td>96-104</td></tr>
+                    <tr><td>G</td><td>96-104</td><td>76-84</td><td>104-112</td></tr>
+                    <tr><td>GG</td><td>104-112</td><td>84-92</td><td>112-120</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>      
+
+    <!-- Modal de imagem -->
+    <div id="imagemModal" class="modal" role="dialog" aria-modal="true">
+        <div class="modal-content imagem-modal-content">
+            <span class="close" aria-label="Fechar imagem">&times;</span>
+            <img id="imagemModalSrc" src="" alt="Visualização ampliada" />
+        </div>
+    </div>
+
+    <section class="avaliacao-produto">
+        <div class="container">
+            <h2>Avaliação do Produto</h2>
+            <div class="nota-media">
+                <h3><%= product.ratingAverage %> ★★★★☆</h3>
+                <p>Média entre <%= product.ratingCount %> opiniões</p>
+            </div>
+            <div class="recomendacoes">
+                <p><%= product.recommendationPercentage %>% dos clientes recomendam o produto.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="comentarios">
+        <div class="container">
+            <h2>Comentários</h2>
+            <% if (product.comments && product.comments.length > 0) { %>
+                <% product.comments.forEach(function(comment) { %>
+                    <div class="comentario">
+                        <h4><%= comment.user %></h4>
+                        <p><%= comment.text %></p>
+                        <div class="rating" aria-label="Avaliação do comentário">
+                            <% for (let i = 0; i < 5; i++) { %>
+                                <% if (i < comment.rating) { %>
+                                    <span class="fa fa-star checked" aria-hidden="true"></span>
+                                <% } else { %>
+                                    <span class="fa fa-star" aria-hidden="true"></span>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>Não há comentários para este produto.</p>
+            <% } %>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CREED GODS. Todos os direitos reservados.</p>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/sobre">Sobre</a></li>
+                    <li><a href="/politica-de-privacidade">Política de Privacidade</a></li>
+                    <li><a href="/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/contato">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/search.js"></script>
+    <script src="/comprar.js"></script>
+    <script src="/modal.js"></script>
+    <script src="/favorito.js"></script>
+
+    <!-- Script para abrir modal de imagem -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const imagemModal = document.getElementById('imagemModal');
+        const imagemModalSrc = document.getElementById('imagemModalSrc');
+        const closeImgModal = imagemModal.querySelector('.close');
+
+        // Ao clicar em uma miniatura, abre o modal com a imagem
+        document.querySelectorAll('.miniatura-img').forEach(img => {
+            img.addEventListener('click', () => {
+                imagemModal.style.display = 'block';
+                imagemModalSrc.src = img.src;
+            });
+        });
+
+        // Fecha ao clicar no X
+        closeImgModal.addEventListener('click', () => {
+            imagemModal.style.display = 'none';
+        });
+
+        // Fecha ao clicar fora da imagem
+        window.addEventListener('click', (event) => {
+            if (event.target === imagemModal) {
+                imagemModal.style.display = 'none';
+            }
+        });
+    });
+    </script>
+</body>
+</html>

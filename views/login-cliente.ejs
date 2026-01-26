@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - CREED GODS</title>
+  <link rel="stylesheet" href="/css/login-cliente.css">
+</head>
+<body>
+<section class="login-section">
+  <div class="login-container">
+    <h2>Login do Cliente</h2>
+    <form action="/login-cliente" method="post" class="login-form">
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required placeholder="Digite seu e-mail">
+      </div>
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" required placeholder="Digite sua senha">
+      </div>
+      <button type="submit" class="btn-login">Entrar</button>
+    </form>
+
+    <!-- Link para cadastro -->
+    <p class="register-link">Não tem conta? <a href="/cadastro">Cadastre-se</a></p>
+
+    <!-- Novo link para recuperação de senha -->
+    <p class="forgot-password">
+      <a href="/esqueceu-senha">Esqueceu sua senha?</a>
+    </p>
+  </div>
+</section>
+</body>
+</html>

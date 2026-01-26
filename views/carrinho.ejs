@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seu Carrinho</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container">
+            <img src="/images/logo.png" alt="Logo" class="logo">
+            <img src="/images/logo 1.png" alt="Logo_1" class="logo_1">
+            <div class="barra-pesquisa" role="search">
+            <input type="text" id="search-input" placeholder="O que você está procurando?" aria-label="Pesquisar produtos">
+            <i class="fa fa-search" id="search-btn" aria-label="Botão de pesquisa"></i>
+            <p id="search-feedback" style="display:none;"></p>
+            </div>
+
+            <div class="menu-navegacao">
+            <nav>
+                <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/produtos">Produtos</a></li>
+                <li><a href="/favoritos">Favoritos</a></li>
+                <li><a href="/promocoes">Promoções</a></li>
+                <li><a href="/area-cliente">Minha Área</a></li>
+
+                <% if (clienteLogado) { %>
+                    <li><a href="/logout-cliente">Sair</a></li>
+                <% } else { %>
+                    <li><a href="/login-cliente">Login</a></li>
+                <% } %>
+                
+                </ul>
+            </nav>
+            </div>
+    </header>
+
+    </main>
+    <% if (cart.items && cart.items.length > 0) { %>
+        <!-- Quando o carrinho tiver produtos -->
+        <div class="carrinho-resumo-container">
+            <!-- Carrinho -->
+            <main class="carrinho-container1">
+                <!-- Seção: Meu Carrinho -->
+                <section class="itens-carrinho">
+                    <h2>Meu Carrinho</h2>
+                    <% cart.items.forEach(function(item) { %>
+                        <div class="item-carrinho">
+                            <!-- Container da Imagem e Quantidade -->
+                            <div class="imagem-carrinho-container">
+                                <img src="<%= item.image %>" alt="<%= item.name %>" class="imagem-carrinho">
+                                <div class="quantidade-container">
+                                    <span class="texto-quantidade">Quantidade:</span>
+                                    <div class="quantidade">
+                                        <button class="btn-quantidade" data-action="decrease" data-id="<%= item.id %>">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                        <span id="quantidade-<%= item.id %>"><%= item.quantity || 1 %></span>
+                                        <button class="btn-quantidade" data-action="increase" data-id="<%= item.id %>">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <button class="btn escolher-produtos" onclick="window.location.href='/produtos'">Escolher Mais Produtos</button>
+                                </div>
+                            </div>
+
+                            <!-- Detalhes do Produto -->
+                            <div class="detalhes-carrinho">
+                                <div class="linha-nome">
+                                    <h3><%= item.name %></h3>
+                                    <button class="btn remover-item" data-id="<%= item.id %>" title="Remover item">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                                <p><strong>Tamanho:</strong> <%= item.size %></p>
+                                <p>
+                                    <strong data-price="<%= item.price %>" data-id="<%= item.id %>">
+                                        Preço Unitário: R$ <%= item.price.toFixed(2) %>
+                                    </strong>
+                                </p>
+                            </div>
+                        </div>
+                    <% }) %>
+                </section>
+            </main>
+
+            <!-- Resumo da Compra -->
+            <aside class="resumo-pedido">                                                                                                         
+                <h3>Resumo da Compra</h3>
+                <div class="resumo-linha">
+                    <p id="subtotal">Subtotal: R$ <%= cart.subtotal.toFixed(2) %></p>
+                </div>
+                <div class="resumo-linha">
+                    <p id="frete">Frete: R$ <%= cart.shipping.toFixed(2) %></p>
+                </div>
+                <div class="resumo-linha total">
+                    <p><strong id="total">Total: R$ <%= cart.total.toFixed(2) %></strong></p>
+                </div>
+
+                <!-- Escolha do tipo de pagamento -->
+                <div class="resumo-linha">
+                    <label for="tipo-pagamento"><strong>Forma de Pagamento:</strong></label>
+                    <select id="tipo-pagamento" required>
+                        <option value="Pix">Pix</option>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        <option value="Cartão de Débito">Cartão de Débito</option>
+                        <option value="Dinheiro">Dinheiro na Entrega</option>
+                    </select>
+                </div>
+
+                <div class="cupom-container resumo-linha">
+                    <input type="text" id="cupom" placeholder="Insira seu cupom">
+                    <button class="btn aplicar-cupom">Validar Cupom</button>
+                    <p id="cupom-status" style="display: none;"></p>
+                    <p id="economia" style="display: none; color: green; font-weight: bold;"></p>
+                </div>
+                <button class="btn finalizar-compra">Finalizar Compra</button>
+            </aside>
+        </div>
+    <% } else { %>
+        <!-- Quando o carrinho estiver vazio -->
+        <section class="carrinho-vazio">
+            <i class="fa fa-shopping-cart icone-carrinho-vazio"></i>
+            <h2>Seu carrinho está vazio 😕</h2>
+            <p>Que tal explorar nossos produtos incríveis?</p>
+            <a href="/produtos" class="btn explorar-produtos">Explorar Produtos</a>
+        </section>
+    <% } %>
+
+    <!-- Produtos em promoção -->
+    <% if (saleProducts && saleProducts.length > 0) { %>
+        <section class="promocoes">
+            <div class="container">
+                <h2>Produtos em Promoção</h2>
+                <div class="carrossel-container">
+                    <button class="seta esquerda" aria-label="Anterior">&#10094;</button>
+                    <div class="carrossel carrossel-promocoes">
+                        <% saleProducts.forEach(function(product) { %>
+                            <div class="item-carrossel promocao-item">
+                                <a href="/produto/<%= product._id %>">
+                                    <img src="<%= product.image %>" alt="Imagem do produto <%= product.name %>">
+                                </a>
+                                <button class="favorito-btn-imagem favorito-inicial" data-id="<%= product._id %>" aria-label="Adicionar aos favoritos">
+                                    <i class="fa fa-heart"></i>
+                                </button>
+                                <h3><%= product.name %></h3>
+                                <p class="preco-original">R$ <%= product.originalPrice ? product.originalPrice.toFixed(2) : '' %></p>
+                                <p class="preco-desconto">R$ <%= product.discountedPrice ? product.discountedPrice.toFixed(2) : '' %></p>
+                                <p class="parcelamento">ou em até <%= product.maxInstallments %>x de R$ <%= product.installmentValue ? product.installmentValue.toFixed(2) : '' %></p>
+                                <a href="/produto/<%= product._id %>" class="btn ver-mais-btn">
+                                    <i class="fa fa-eye" aria-hidden="true"></i> Ver Mais
+                                </a>
+                            </div>
+                        <% }) %>
+                    </div>
+                    <button class="seta direita" aria-label="Próximo">&#10095;</button>
+                </div>
+            </div>
+        </section>
+    <% } %>
+
+    <!-- Modal de Login -->
+    <div id="loginModal" class="login-modal">
+    <div class="login-modal-content">
+        <h2>⚠️ Você precisa estar logado</h2>
+        <p>Para finalizar sua compra, entre na sua conta e volte aqui rapidinho.</p>
+        <a href="/login-cliente" class="btn">Ir para Login</a>
+        <button class="btn fechar-login-modal" onclick="document.getElementById('loginModal').style.display='none'">Fechar</button>
+    </div>
+    </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CREED GODS. Todos os direitos reservados.</p>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/sobre">Sobre</a></li>
+                    <li><a href="/politica-de-privacidade">Política de Privacidade</a></li>
+                    <li><a href="/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/contato">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+    <script src="/carrinho.js"></script>
+    <script src="/search.js"></script>
+    <script src="/favorito.js"></script>   
+</body>
+</html>

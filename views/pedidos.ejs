@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedidos - CREED GODS</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Painel de Administração</h1>
+      <nav>
+        <ul>
+            <li><a href="/inicio">Início</a></li>
+            <li><a href="/admin">Cadastro</a></li>
+            <li><a href="/admin/produtos">Gerenciar Produtos</a></li>
+            <li><a href="/admin/entrada">Entrada</a></li>
+            <li><a href="/admin/pedidos">Pedidos</a></li>
+            <li><a href="/admin/relatorios">Relatórios</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="admin-section">
+    <div class="container">
+      <h2>Pedidos</h2>
+      <% if (pedidos && pedidos.length > 0) { %>
+        <table class="pedidos-table">
+          <thead>
+            <tr>
+              <th>Nº Pedido</th>
+              <th>Cliente</th>
+              <th>Itens</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% pedidos.forEach(pedido => { %>
+              <tr>
+                <td><%= pedido.orderNumber %></td>
+                <td><%= pedido.cliente?.nome || "Cliente não disponível" %></td>
+                <td>
+                  <% pedido.items.forEach(item => { %>
+                    <p><%= item.produto.name %> (x<%= item.quantidade %>)</p>
+                  <% }) %>
+                </td>
+                <td>R$ <%= pedido.total.toFixed(2) %></td>
+                <td><%= pedido.status %></td>
+                <td>
+                  <% if (pedido.status === 'Aguardando pagamento') { %>
+                    <form action="/admin/pedidos/<%= pedido._id %>/finalizar" method="post" style="display:inline;">
+                      <button type="submit" class="btn-finalizar">Finalizar</button>
+                    </form>
+                    <form action="/admin/pedidos/<%= pedido._id %>/cancelar" method="post" style="display:inline;">
+                      <button type="submit" class="btn-cancelar">Cancelar</button>
+                    </form>
+                  <% } else if (pedido.status === 'Finalizado') { %>
+                    <span>✔ Finalizado</span>
+                    <form action="/admin/pedidos/<%= pedido._id %>/estornar" method="post" style="display:inline;">
+                      <button type="submit" class="btn-estorno">Estornar</button>
+                    </form>
+                  <% } else if (pedido.status === 'Cancelado') { %>
+                    <span>✖ Cancelado</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p>Não há pedidos no momento.</p>
+      <% } %>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 CREED GODS. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+</body>
+</html>

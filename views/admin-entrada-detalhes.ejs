@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalhes da Entrada - CREED GODS</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Painel de Administração</h1>
+      <nav>
+        <ul>
+          <li><a href="/inicio">Início</a></li>
+          <li><a href="/admin">Cadastro</a></li>
+          <li><a href="/admin/produtos">Gerenciar Produtos</a></li>
+          <li><a href="/admin/entrada">Entrada</a></li>
+          <li><a href="/admin/pedidos">Pedidos</a></li>
+          <li><a href="/admin/relatorios">Relatórios</a></li>
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="entrada-section">
+    <div class="entrada-container">
+      <h2>Detalhes da Entrada</h2>
+
+      <div class="entrada-detalhes">
+        <p><strong>Código da Entrada:</strong> <%= entrada.codigo %></p>
+        <p><strong>Número do Pedido:</strong> <%= entrada.pedidoNumero %></p>
+        <p><strong>Data:</strong> <%= new Date(entrada.data).toLocaleDateString() %></p>
+      </div>
+
+      <h3>Itens da Entrada</h3>
+      <table class="entrada-tabela">
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Preço</th>
+            <th>Desconto</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% entrada.itens.forEach(item => { %>
+            <tr>
+              <td><%= item.produto?.name || 'Produto removido' %></td>
+              <td><%= item.quantidade %></td>
+              <td>R$ <%= item.preco.toFixed(2) %></td>
+              <td>R$ <%= item.desconto.toFixed(2) %></td>
+              <td>R$ <%= item.total.toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div style="margin-top: 20px;">
+        <a href="/admin/entrada" class="entrada-btn">Voltar</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="entrada-footer">
+    <div class="container">
+      <p>&copy; 2026 CREED GODS. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+</body>
+</html>

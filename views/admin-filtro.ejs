@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Entrada de Produtos - CREED GODS</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Painel de Administração</h1>
+      <nav>
+        <ul>
+          <li><a href="/inicio">Início</a></li>
+          <li><a href="/admin">Cadastro</a></li>
+          <li><a href="/admin/produtos">Gerenciar Produtos</a></li>
+          <li><a href="/admin/entrada">Entrada</a></li>
+          <li><a href="/admin/pedidos">Pedidos</a></li>
+          <li><a href="/admin/relatorios">Relatórios</a></li>
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="entrada-section">
+    <div class="entrada-container">
+      <h2>Entrada de Produtos</h2>
+
+      <!-- Filtro inicial -->
+      <form id="filtroEntrada" class="entrada-form" style="margin-bottom:20px;">
+        <div class="entrada-form-group">
+          <label for="pedidoFiltro">Pedido:</label>
+          <input type="text" id="pedidoFiltro" name="pedidoFiltro" placeholder="Digite o número do pedido">
+        </div>
+
+        <div class="entrada-form-group">
+          <label for="dataInicio">Data Início:</label>
+          <input type="date" id="dataInicio" name="dataInicio">
+        </div>
+
+        <div class="entrada-form-group">
+          <label for="dataFim">Data Final:</label>
+          <input type="date" id="dataFim" name="dataFim">
+        </div>
+
+        <div style="margin-top:10px;">
+          <button type="button" id="buscarPedidos" class="entrada-btn">Buscar</button>
+          <button type="button" id="incluirEntrada" class="entrada-btn">Incluir</button>
+        </div>
+      </form>
+
+      <!-- Resultados da busca -->
+      <div id="resultadoBusca"></div>
+    </div>
+  </section>
+
+  <footer class="entrada-footer">
+    <div class="container">
+      <p>&copy; 2026 CREED GODS. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Botão Buscar
+    document.getElementById('buscarPedidos').addEventListener('click', async () => {
+        const pedido = document.getElementById('pedidoFiltro').value;
+        const inicio = document.getElementById('dataInicio').value;
+        const fim = document.getElementById('dataFim').value;
+
+        let filtro = {};
+        if (pedido) filtro.pedidoNumero = pedido; // alinhado com o schema
+        if (inicio) filtro.inicio = inicio;
+        if (fim) filtro.fim = fim;
+
+        const response = await fetch('/admin/entrada/buscar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(filtro)
+        });
+
+        const pedidos = await response.json();
+
+        // Renderiza resultados
+        let html = '<h3>Entradas encontradas</h3>';
+        if (pedidos.length === 0) {
+          html += '<p>Nenhuma entrada encontrada.</p>';
+        } else {
+          html += '<table class="entrada-tabela"><thead><tr><th>Número do Pedido</th><th>Data</th><th>Ações</th></tr></thead><tbody>';
+          pedidos.forEach(p => {
+              html += `
+              <tr>
+                  <td>${p.pedidoNumero || p.codigo}</td>
+                  <td>${new Date(p.data).toLocaleDateString()}</td>
+                  <td>
+                    <a href="/admin/entrada/pedido/${p._id}" class="entrada-btn">Ver Detalhes</a>
+                  </td>
+              </tr>
+              `;
+          });
+          html += '</tbody></table>';
+        }
+
+        document.getElementById('resultadoBusca').innerHTML = html;
+    });
+
+    // Botão Incluir
+    document.getElementById('incluirEntrada').addEventListener('click', () => {
+        window.location.href = "/admin/entrada/incluir";
+    });
+  </script>
+</body>
+</html>

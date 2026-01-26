@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatórios - CREED GODS</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Painel de Administração</h1>
+      <nav>
+        <ul>
+          <li><a href="/inicio">Início</a></li>
+          <li><a href="/admin">Cadastro</a></li>
+          <li><a href="/admin/produtos">Gerenciar Produtos</a></li>
+          <li><a href="/admin/entrada">Entrada</a></li>
+          <li><a href="/admin/pedidos">Pedidos</a></li>
+          <li><a href="/admin/relatorios">Relatórios</a></li>
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="admin-section">
+    <div class="container">
+        <h2>Relatório de Vendas</h2>
+
+        <!-- Filtro -->
+        <form method="get" action="/admin/relatorios" class="relatorio-filtro">
+        <div class="filtro-grupo">
+            <div class="filtro-item">
+            <label for="inicio">Data Início:</label>
+            <input type="date" id="inicio" name="inicio" value="<%= inicio || '' %>">
+            </div>
+
+            <div class="filtro-item">
+            <label for="fim">Data Final:</label>
+            <input type="date" id="fim" name="fim" value="<%= fim || '' %>">
+            </div>
+
+            <div class="filtro-item botoes">
+            <button type="submit" class="entrada-btn">Filtrar</button>
+            <a href="/admin/relatorios/exportar?<% if(inicio && fim){ %>inicio=<%= inicio %>&fim=<%= fim %><% } %>" class="entrada-btn">Baixar Excel</a>
+            </div>
+        </div>
+        </form>
+
+        <p><strong>Total vendido:</strong> R$ <%= totalVendido.toFixed(2) %></p>
+        <p><strong>Total de itens vendidos:</strong> <%= totalItens %></p>
+
+        <h3>Pedidos Finalizados</h3>
+        <table class="admin-table">
+        <thead>
+            <tr>
+            <th>Número</th>
+            <th>Data</th>
+            <th>Total</th>
+            <th>Itens</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% pedidos.forEach(p => { %>
+            <tr>
+                <td><%= p.orderNumber %></td>
+                <td><%= p.data.toLocaleDateString() %></td>
+                <td>R$ <%= p.total.toFixed(2) %></td>
+                <td>
+                <% p.items.forEach(i => { %>
+                    <div><%= i.produto.name %> - Qtd: <%= i.quantidade %></div>
+                <% }) %>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+        </table>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 CREED GODS. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+</body>
+</html>

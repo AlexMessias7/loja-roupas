@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Produtos - CREED GODS</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Painel de Administração</h1>
+            <nav>
+                <ul>
+                    <li><a href="/inicio">Início</a></li>
+                    <li><a href="/admin">Cadastro</a></li>
+                    <li><a href="/admin/produtos">Gerenciar Produtos</a></li>
+                    <li><a href="/admin/entrada">Entrada</a></li>
+                    <li><a href="/admin/pedidos">Pedidos</a></li>
+                    <li><a href="/admin/relatorios">Relatórios</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="admin-section">
+        <div class="container">
+            <h2>Produtos</h2>
+
+            <!-- Barra de pesquisa -->
+            <div class="search-bar" style="margin-bottom: 20px; text-align: right;">
+                <input type="text" id="searchInput" placeholder="Buscar produto..." style="padding:8px; width:250px;">
+            </div>
+
+            <% if (products && products.length > 0) { %>
+                <table class="admin-table" id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Imagem</th>
+                            <th>Nome</th>
+                            <th>Preço</th>
+                            <th>Desconto</th>
+                            <th>Estoque</th>
+                            <th>Esto. Máx</th>
+                            <th>Esto. Mín</th>
+                            <th>Sugestão de Compra</th>
+                            <th>Gênero</th>
+                            <th>Destaque</th>
+                            <th>Promoção</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% products.forEach(function(product) { %>
+                            <tr class="<%= product.stock < product.stockMin ? 'estoque-baixo' : '' %>">
+                                <td>
+                                    <img src="<%= product.image %>" alt="<%= product.name %>" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">
+                                </td>
+                                <td><%= product.name %></td>
+                                <td>R$ <%= product.originalPrice ? product.originalPrice.toFixed(2) : '' %></td>
+                                <td>R$ <%= product.discountedPrice ? product.discountedPrice.toFixed(2) : '' %></td>
+                                <td><%= product.stock %></td>
+                                <td><%= product.stockMax %></td>
+                                <td><%= product.stockMin %></td>
+                                <td>
+                                    <% if (product.stock < product.stockMin) { %>
+                                        <%= product.stockMax - product.stock %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td><%= product.gender %></td>
+                                <td><%= product.isFeatured ? 'Sim' : 'Não' %></td>
+                                <td><%= product.isOnSale ? 'Sim' : 'Não' %></td>
+                                <td class="acoes">
+                                    <div class="btn-group">
+                                        <a href="/admin/produtos/<%= product._id %>/editar" class="btn-editar">Editar</a>
+                                        <form action="/admin/produtos/<%= product._id %>?_method=DELETE" method="post">
+                                            <button type="submit" class="btn-excluir">Excluir</button>
+                                        </form>
+                                        <!-- Novo botão de ajuste -->
+                                        <form action="/admin/produtos/<%= product._id %>/ajustar-estoque" method="post" style="margin-top:5px;">
+                                            <input type="number" name="quantidade" placeholder="±Qtd" style="width:70px; padding:4px;" required>
+                                            <button type="submit" class="btn-ajustar">Ajustar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>Não há produtos cadastrados no momento.</p>
+            <% } %>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CREED GODS. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Script de pesquisa dinâmica -->
+    <script>
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#productsTable tbody tr');
+
+            rows.forEach(row => {
+                const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                if (name.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

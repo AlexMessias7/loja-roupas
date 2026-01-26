@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREED GODS</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container">
+            <img src="/images/logo.png" alt="Logo" class="logo">
+            <img src="/images/logo 1.png" alt="Logo_1" class="logo_1">
+            <div class="barra-pesquisa" role="search">
+            <input type="text" id="search-input" placeholder="O que você está procurando?" aria-label="Pesquisar produtos">
+            <i class="fa fa-search" id="search-btn" aria-label="Botão de pesquisa"></i>
+            <p id="search-feedback" style="display:none;"></p>
+            </div>
+
+            <div class="menu-navegacao">
+            <nav>
+                <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/produtos">Produtos</a></li>
+                <li><a href="/favoritos">Favoritos</a></li>
+                <li><a href="/promocoes">Promoções</a></li>
+                <li><a href="/area-cliente">Minha Área</a></li>
+
+                <% if (clienteLogado) { %>
+                    <li><a href="/logout-cliente">Sair</a></li>
+                <% } else { %>
+                    <li><a href="/login-cliente">Login</a></li>
+                <% } %>
+
+                <div class="carrinho-container">
+                    <i id="cartIcon" class="fa fa-shopping-cart"></i>
+                </div>
+                </ul>
+            </nav>
+            </div>
+    </header>
+
+    <main>
+    <!-- Seção de Destaques com Carrossel -->
+    <section class="destaques">
+    <div class="container">
+        <h2>Destaques</h2>
+        <div class="carrossel-container">
+        <button class="seta esquerda" aria-label="Anterior">&#10094;</button>
+        <div class="carrossel">
+            <% if (featuredProducts && featuredProducts.length > 0) { %>
+            <% featuredProducts.forEach(function(product) { %>
+                <div class="item-carrossel destaque-item">
+                <a href="/produto/<%= product._id %>">
+                    <img src="<%= product.image %>" alt="Imagem do produto <%= product.name %>">
+                </a>
+                <button class="favorito-btn-imagem favorito-inicial" data-id="<%= product._id %>" aria-label="Adicionar aos favoritos">
+                    <i class="fa fa-heart"></i>
+                </button>
+                <h3><%= product.name %></h3>
+                <p class="preco-original">R$ <%= product.originalPrice ? product.originalPrice.toFixed(2) : '' %></p>
+                <p class="preco-desconto">R$ <%= product.discountedPrice ? product.discountedPrice.toFixed(2) : '' %></p>
+                <p class="parcelamento">ou em até <%= product.maxInstallments %>x de R$ <%= product.installmentValue ? product.installmentValue.toFixed(2) : '' %></p>
+                <a href="/produto/<%= product._id %>" class="btn ver-mais-btn">
+                    <i class="fa fa-eye" aria-hidden="true"></i> Ver Mais
+                </a>
+                </div>
+            <% }) %>
+            <% } else { %>
+            <p>Não há produtos em destaque no momento.</p>
+            <% } %>
+        </div>
+        <button class="seta direita" aria-label="Próximo">&#10095;</button>
+        </div>
+    </div>
+    </section>
+
+    <!-- Seção de Promoções com Carrossel -->
+    <section class="promocoes">
+    <div class="container">
+        <h2>Produtos em Promoção</h2>
+        <div class="carrossel-container">
+        <button class="seta esquerda" aria-label="Anterior">&#10094;</button>
+        <div class="carrossel carrossel-promocoes">
+            <% if (saleProducts && saleProducts.length > 0) { %>
+            <% saleProducts.forEach(function(product) { %>
+                <div class="item-carrossel promocao-item">
+                <a href="/produto/<%= product._id %>">
+                    <img src="<%= product.image %>" alt="Imagem do produto <%= product.name %>">
+                </a>
+                <button class="favorito-btn-imagem favorito-inicial" data-id="<%= product._id %>" aria-label="Adicionar aos favoritos">
+                    <i class="fa fa-heart"></i>
+                </button>
+                <h3><%= product.name %></h3>
+                <p class="preco-original">R$ <%= product.originalPrice ? product.originalPrice.toFixed(2) : '' %></p>
+                <p class="preco-desconto">R$ <%= product.discountedPrice ? product.discountedPrice.toFixed(2) : '' %></p>
+                <p class="parcelamento">ou em até <%= product.maxInstallments %>x de R$ <%= product.installmentValue ? product.installmentValue.toFixed(2) : '' %></p>
+                <a href="/produto/<%= product._id %>" class="btn ver-mais-btn">
+                    <i class="fa fa-eye" aria-hidden="true"></i> Ver Mais
+                </a>
+                </div>
+            <% }) %>
+            <% } else { %>
+            <p>Não há produtos em promoção no momento.</p>
+            <% } %>
+        </div>
+        <button class="seta direita" aria-label="Próximo">&#10095;</button>
+        </div>
+    </div>
+    </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CREED GODS. Todos os direitos reservados.</p>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/sobre">Sobre</a></li>
+                    <li><a href="/politica-de-privacidade">Política de Privacidade</a></li>
+                    <li><a href="/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/contato">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+    <script src="/search.js"></script>
+    <script src="/comprar.js"></script>
+    <script src="/pagina-inicial.js"></script>
+    <script src="/favorito.js"></script>
+</body>
+</html>

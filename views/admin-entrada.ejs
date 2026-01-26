@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Incluir Entrada - CREED GODS</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Painel de Administração</h1>
+      <nav>
+        <ul>
+          <li><a href="/inicio">Início</a></li>
+          <li><a href="/admin">Cadastro</a></li>
+          <li><a href="/admin/produtos">Gerenciar Produtos</a></li>
+          <li><a href="/admin/entrada">Entrada</a></li>
+          <li><a href="/admin/pedidos">Pedidos</a></li>
+          <li><a href="/admin/relatorios">Relatórios</a></li>
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="entrada-section">
+    <div class="entrada-container">
+      <h2>Incluir Entrada de Produtos</h2>
+
+      <!-- Formulário de entrada -->
+      <form id="entradaForm" class="entrada-form">
+        <div class="entrada-form-group">
+          <label for="productId">Produto:</label>
+          <select id="productId" name="productId" required>
+            <% products.forEach(product => { %>
+              <option value="<%= product._id %>"><%= product.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="entrada-form-group">
+          <label for="quantidade">Quantidade:</label>
+          <input type="number" id="quantidade" name="quantidade" required>
+        </div>
+
+        <div class="entrada-form-group">
+          <label for="preco">Preço unitário:</label>
+          <input type="number" id="preco" name="preco" step="0.01" required>
+        </div>
+
+        <div class="entrada-form-group">
+          <label for="desconto">Desconto:</label>
+          <input type="number" id="desconto" name="desconto" step="0.01" value="0">
+        </div>
+
+        <div class="entrada-form-group">
+          <label for="total">Total:</label>
+          <input type="number" id="total" name="total" step="0.01" readonly>
+        </div>
+
+        <button type="button" id="addProduto" class="entrada-btn">Adicionar</button>
+      </form>
+
+      <!-- Tabela de produtos adicionados -->
+      <h3>Produtos adicionados</h3>
+      <table id="tabelaEntrada" class="entrada-tabela">
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Preço</th>
+            <th>Desconto</th>
+            <th>Total</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button id="finalizarEntrada" class="entrada-btn finalizar">Finalizar Entrada</button>
+    </div>
+  </section>
+
+  <footer class="entrada-footer">
+    <div class="container">
+      <p>&copy; 2026 CREED GODS. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    const quantidadeInput = document.getElementById('quantidade');
+    const precoInput = document.getElementById('preco');
+    const descontoInput = document.getElementById('desconto');
+    const totalInput = document.getElementById('total');
+    const tabela = document.getElementById('tabelaEntrada').querySelector('tbody');
+
+    function calcularTotal() {
+      const qtd = parseFloat(quantidadeInput.value) || 0;
+      const preco = parseFloat(precoInput.value) || 0;
+      const desconto = parseFloat(descontoInput.value) || 0;
+      totalInput.value = ((preco - desconto) * qtd).toFixed(2);
+    }
+
+    quantidadeInput.addEventListener('input', calcularTotal);
+    precoInput.addEventListener('input', calcularTotal);
+    descontoInput.addEventListener('input', calcularTotal);
+
+    document.getElementById('addProduto').addEventListener('click', () => {
+      const productSelect = document.getElementById('productId');
+      const produto = productSelect.options[productSelect.selectedIndex].text;
+      const productId = productSelect.value;
+      const qtd = quantidadeInput.value;
+      const preco = precoInput.value;
+      const desconto = descontoInput.value;
+      const total = totalInput.value;
+
+      if (!produto || !qtd || !preco) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      const row = document.createElement('tr');
+      row.dataset.productId = productId; // guarda o ID real do produto
+      row.innerHTML = `
+        <td>${produto}</td>
+        <td>${qtd}</td>
+        <td>R$ ${preco}</td>
+        <td>R$ ${desconto}</td>
+        <td>R$ ${total}</td>
+        <td><button type="button" class="remove">Excluir</button></td>
+      `;
+      tabela.appendChild(row);
+
+      row.querySelector('.remove').addEventListener('click', () => {
+        tabela.removeChild(row);
+      });
+
+      document.getElementById('entradaForm').reset();
+      totalInput.value = '';
+    });
+
+    document.getElementById('finalizarEntrada').addEventListener('click', () => {
+      const itens = [];
+      tabela.querySelectorAll('tr').forEach(tr => {
+        const tds = tr.querySelectorAll('td');
+        itens.push({
+          productId: tr.dataset.productId,
+          quantidade: parseInt(tds[1].innerText),
+          preco: parseFloat(tds[2].innerText.replace('R$ ', '')),
+          desconto: parseFloat(tds[3].innerText.replace('R$ ', '')),
+          total: parseFloat(tds[4].innerText.replace('R$ ', ''))
+        });
+      });
+
+      if (itens.length === 0) {
+        alert("Nenhum produto adicionado!");
+        return;
+      }
+
+      // gera número automático do pedido
+      const pedidoNumero = "PED-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.floor(Math.random()*1000);
+
+      fetch('/admin/entrada', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pedidoNumero, itens })
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("Entrada finalizada!\nPedido gerado: " + pedidoNumero);
+          window.location.href = '/admin/entrada'; // redireciona para a tela de filtro/lista
+        } else {
+          alert("Erro ao salvar entrada!");
+        }
+      })
+      .catch(err => console.error("Erro na requisição:", err));
+    });
+  </script>
+</body>
+</html>

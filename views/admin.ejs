@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração - CREED GODS</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Painel de Administração</h1>
+            <nav>
+                <ul>
+                    <li><a href="/inicio">Início</a></li>
+                    <li><a href="/admin">Cadastro</a></li>
+                    <li><a href="/admin/produtos">Gerenciar Produtos</a></li>
+                    <li><a href="/admin/entrada">Entrada</a></li>
+                    <li><a href="/admin/pedidos">Pedidos</a></li>
+                    <li><a href="/admin/relatorios">Relatórios</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="admin-section">
+        <div class="container">
+            <h2>Adicionar Novo Produto</h2>
+            <form action="/admin/produtos" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Nome do Produto:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="originalPrice">Preço Original:</label>
+                    <input type="number" id="originalPrice" name="originalPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="discountedPrice">Preço com Desconto:</label>
+                    <input type="number" id="discountedPrice" name="discountedPrice" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="image">Imagem Principal:</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="extraImages">Imagens Adicionais do Produto:</label>
+                    <input type="file" id="extraImage1" name="extraImages" accept="image/*">
+                    <input type="file" id="extraImage2" name="extraImages" accept="image/*">
+                    <input type="file" id="extraImage3" name="extraImages" accept="image/*">
+                </div>                              
+                <div class="form-group">
+                    <label for="gender">Gênero:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Unissex">Unissex</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sizes">Tamanhos:</label>
+                    <div>
+                        <label><input type="checkbox" name="sizes" value="P"> P</label>
+                        <label><input type="checkbox" name="sizes" value="M"> M</label>
+                        <label><input type="checkbox" name="sizes" value="G"> G</label>
+                        <label><input type="checkbox" name="sizes" value="GG"> GG</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="maxInstallments">Número Máximo de Parcelas:</label>
+                    <input type="number" id="maxInstallments" name="maxInstallments" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stockMax">Estoque Máximo:</label>
+                    <input type="number" id="stockMax" name="stockMax" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stockMin">Estoque Mínimo:</label>
+                    <input type="number" id="stockMin" name="stockMin" required>
+                </div>
+                <div class="form-group">
+                    <label for="isFeatured">Destaque:</label>
+                    <input type="checkbox" id="isFeatured" name="isFeatured">
+                </div>
+                <div class="form-group">
+                    <label for="isOnSale">Promoção:</label>
+                    <input type="checkbox" id="isOnSale" name="isOnSale">
+                </div>
+                <button type="submit">Adicionar Produto</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CREED GODS. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

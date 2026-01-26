@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Meus Pedidos - CREED GODS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container">
+            <img src="/images/logo.png" alt="Logo" class="logo">
+            <img src="/images/logo 1.png" alt="Logo_1" class="logo_1">
+            <div class="barra-pesquisa" role="search">
+            <input type="text" id="search-input" placeholder="O que você está procurando?" aria-label="Pesquisar produtos">
+            <i class="fa fa-search" id="search-btn" aria-label="Botão de pesquisa"></i>
+            <p id="search-feedback" style="display:none;"></p>
+            </div>
+
+            <div class="menu-navegacao">
+            <nav>
+                <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/produtos">Produtos</a></li>
+                <li><a href="/area-cliente">Minha Área</a></li>
+                <li><a href="/logout-cliente">Sair</a></li>
+                </ul>
+            </nav>
+            </div>
+    </header>
+
+  <div class="main-content">
+    <section class="meus-pedidos">
+    <div class="container">
+        <h2>📦 Meus Pedidos</h2>
+
+        <% if (pedidos.length === 0) { %>
+        <div class="mensagem-vazia">
+        <h3>😅 Nenhum pedido encontrado</h3>
+        <p>Você ainda não realizou nenhuma compra. Que tal explorar nossos produtos incríveis?</p>
+        <a href="/produtos" class="btn-explorar">Ver Produtos</a>
+        </div>
+        <% } else { %>
+        <div class="blocos-pedidos">
+        <% pedidos.forEach(pedido => { %>
+            <div class="pedido-bloco">
+            <table class="pedido-tabela">
+                <tr>
+                <th>Número:</th>
+                <td><%= pedido.orderNumber %></td>
+                </tr>
+                <tr>
+                <th>Status:</th>
+                <td>
+                    <span class="status-pedido <%= pedido.status.toLowerCase().replace(/\s/g, '-') %>">
+                    <% if (pedido.status === 'Aguardando pagamento') { %>
+                        ⏳ Aguardando pagamento
+                    <% } else if (pedido.status === 'Finalizado') { %>
+                        ✅ Finalizado
+                    <% } else if (pedido.status === 'Estornado') { %>
+                        ❌ Estornado
+                    <% } else if (pedido.status === 'Cancelado') { %>
+                        🚫 Cancelado
+                    <% } else { %>
+                        <%= pedido.status %>
+                    <% } %>
+                    </span>
+                </td>
+                </tr>
+                <tr>
+                <th>Data:</th>
+                <td><%= pedido.data.toLocaleDateString() %></td>
+                </tr>
+                <tr>
+                <th>Itens:</th>
+                <td>
+                    <div class="itens-pedido">
+                    <% pedido.items.forEach(item => { %>
+                        <div class="item-card">
+                        <img src="<%= item.produto?.image %>" alt="<%= item.produto?.name %>" class="item-imagem">
+                        <div class="item-detalhes">
+                            <h4><%= item.produto?.name %></h4>
+                            <p><strong>Quantidade:</strong> <%= item.quantidade %></p>
+                            <p><strong>Preço Unitário:</strong> R$ <%= item.precoUnitario.toFixed(2) %></p>
+                        </div>
+                        </div>
+                    <% }) %>
+                    </div>
+                </td>
+                </tr>
+            </table>
+            </div>
+        <% }) %>
+        </div>
+        <% } %>
+    </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 CREED GODS. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+</body>
+</html>

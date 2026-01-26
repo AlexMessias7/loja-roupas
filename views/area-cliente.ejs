@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do Cliente - CREED GODS</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container">
+            <img src="/images/logo.png" alt="Logo" class="logo">
+            <img src="/images/logo 1.png" alt="Logo_1" class="logo_1">
+            <div class="barra-pesquisa" role="search">
+            <input type="text" id="search-input" placeholder="O que você está procurando?" aria-label="Pesquisar produtos">
+            <i class="fa fa-search" id="search-btn" aria-label="Botão de pesquisa"></i>
+            <p id="search-feedback" style="display:none;"></p>
+            </div>
+
+            <div class="menu-navegacao">
+            <nav>
+                <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/produtos">Produtos</a></li>
+                <li><a href="/favoritos">Favoritos</a></li>
+                <li><a href="/promocoes">Promoções</a></li>
+                <li><a href="/area-cliente">Minha Área</a></li>
+
+                <% if (clienteLogado) { %>
+                    <li><a href="/logout-cliente">Sair</a></li>
+                <% } else { %>
+                    <li><a href="/login-cliente">Login</a></li>
+                <% } %>
+
+                <div class="carrinho-container">
+                    <i id="cartIcon" class="fa fa-shopping-cart"></i>
+                </div>
+                </ul>
+            </nav>
+            </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <div class="main-content">
+        <!-- Área do cliente -->
+        <section class="area-cliente">
+            <div class="container">
+                <div class="boas-vindas">
+                    <h2>🎉 Bem-vindo, <%= cliente.nome %>!</h2>
+                    <p>Estamos felizes em ter você aqui. Explore nossos produtos e aproveite sua experiência!</p>
+                </div>
+                <div class="acoes-cliente">
+                    <a href="/produtos" class="btn">Ver Produtos</a>
+                    <a href="/meus-pedidos" class="btn">Meus Pedidos</a>
+                    <a href="/editar-cadastro" class="btn">Editar Cadastro</a> <!-- 👈 novo botão -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Rodapé -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CREED GODS. Todos os direitos reservados.</p>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/sobre">Sobre</a></li>
+                    <li><a href="/politica-de-privacidade">Política de Privacidade</a></li>
+                    <li><a href="/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/contato">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="/search.js"></script>
+    <script src="/comprar.js"></script>
+    <script src="/favorito.js"></script>
+</body>
+</html>
