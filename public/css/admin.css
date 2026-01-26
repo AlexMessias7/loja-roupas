@@ -211,6 +211,15 @@ button:hover {
     }
 }
 
+@media (min-width: 1025px) {
+  .product-item {
+    width: 30%;
+    margin: 20px 1.66%;
+    display: inline-block;
+    vertical-align: top;
+  }
+}
+
 .admin-table {
     width: 100%;
     border-collapse: collapse;

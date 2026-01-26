@@ -569,61 +569,78 @@ footer nav ul li a {
     margin: 0;
 }
 
+/* Estilo para celulares */
 @media (max-width: 600px) {
-    header h1 {
-        text-align: center;
-        margin-top: 10px;
-    }
-    header nav {
-        text-align: center;
-    }
-    header nav ul li {
-        display: block;
-        margin: 10px 0;
-    }
-    .destaque-item {
-        display: block;
-        width: 90%;
-        margin: 20px auto;
-    }
-    .logo {
-        display: block;
-        margin: 0 auto;
-    }
+  header h1 {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 20px;
+  }
+
+  header nav {
+    text-align: center;
+    width: 100%;
+  }
+
+  header nav ul li {
+    display: block;
+    margin: 15px 0;
+  }
+
+  .destaque-item {
+    display: block;
+    width: 90%;
+    margin: 20px auto;
+  }
+
+  .logo {
+    display: block;
+    margin: 0 auto;
+    width: 70px;
+  }
 }
 
 /* Estilo para tablets */
 @media (min-width: 601px) and (max-width: 1024px) {
-    header h1 {
-        text-align: center;
-        margin-top: 10px;
-    }
-    header nav {
-        text-align: center;
-    }
-    header nav ul li {
-        display: inline-block;
-        margin-right: 15px;
-    }
-    .destaque-item {
-        width: 45%;
-        margin: 20px 2.5%;
-    }
-    .logo {
-        display: block;
-        margin: 0 auto;
-        width: 70px;
-    }
+  header h1 {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  header nav {
+    text-align: center;
+    width: 100%;
+  }
+
+  header nav ul li {
+    display: inline-block;
+    margin-right: 10px; /* menor espaçamento pra não quebrar */
+  }
+
+  .destaque-item {
+    width: 45%;
+    margin: 20px 2.5%;
+  }
+
+  .logo {
+    display: block;
+    margin: 0 auto;
+    width: 70px;
+  }
 }
 
 /* Estilo para desktops */
 @media (min-width: 1025px) {
-    .destaque-item {
-        width: 30%;
-    }
-    .logo {
-        width: 50px;
-    }
+  .destaque-item {
+    width: 30%;
+    margin: 20px 1.66%;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .logo {
+    width: 50px;
+  }
 }
 
 .produto-info h2 {
