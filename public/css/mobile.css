@@ -967,7 +967,7 @@
   }
 
   .login-form input {
-    width: 100%; /* ocupa toda largura no mobile */
+    width: 95%; /* ocupa toda largura no mobile */
     padding: 8px 28px 8px 10px;
     font-size: 12px;
     border-radius: 6px;
