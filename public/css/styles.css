@@ -402,19 +402,6 @@ footer nav ul li a {
     transform: scale(1.1); /* Efeito de zoom */
 }
 
-.etiqueta-desconto {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #28a745; /* Verde para descontos */
-    color: #fff; /* Texto branco */
-    padding: 5px 10px;
-    font-size: 0.9rem;
-    border-radius: 5px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
-}
-
 /* Contêiner principal da página de detalhes do produto */
 .produto-detalhes .container {
     display: flex; /* Habilita o layout em linha */
