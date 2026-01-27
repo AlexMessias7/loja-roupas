@@ -100,15 +100,6 @@
   text-decoration: underline;
 }
 
-/* Estilo para dispositivos móveis */
-@media (max-width: 600px) {
-    .product-item {
-        display: block;
-        width: 100%;
-        margin: 20px 0;
-    }
-}
-
 /* Estilo para tablets */
 @media (min-width: 601px) and (max-width: 1024px) {
     .product-item {

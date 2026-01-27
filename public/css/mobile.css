@@ -926,3 +926,71 @@
     font-size: 13px;
     padding: 10px;
   }
+
+  /* Container principal */
+  .login-section {
+    padding: 20px;
+    min-height: auto; /* remove altura fixa */
+  }
+
+  .login-container {
+    max-width: 95%;   /* ocupa quase toda largura */
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .login-container h2 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .login-container p {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Mensagem de sucesso */
+  .mensagem-sucesso {
+    font-size: 12px;
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+
+  /* Formulário */
+  .login-form .form-group {
+    margin-bottom: 12px;
+  }
+
+  .login-form label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .login-form input {
+    width: 100%; /* ocupa toda largura no mobile */
+    padding: 8px 28px 8px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  .login-form .form-group::before {
+    font-size: 14px;
+    top: 24px;
+  }
+
+  /* Botão login */
+  .btn-login {
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 6px;
+  }
+
+  /* Links de registro */
+  .register-link {
+    font-size: 12px;
+    margin-top: 10px;
+  }
+
+  .register-link a {
+    font-size: 12px;
+  }
