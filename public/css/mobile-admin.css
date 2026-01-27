@@ -1,0 +1,296 @@
+@media (max-width: 600px) {
+  html, body {
+    font-size: 14px; /* fonte base menor */
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 8px;
+  }
+
+  header h1 {
+    float: none;
+    font-size: 16px;
+    padding: 0;
+    margin-bottom: 6px;
+  }
+
+  header nav {
+    float: none;
+    margin-top: 6px;
+  }
+
+  header nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  header nav ul li {
+    display: inline-block;
+    margin: 0;
+  }
+
+  header nav ul li a {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  /* Admin section */
+  .admin-section {
+    padding: 10px 0;
+    margin-bottom: 10px;
+  }
+
+  .admin-section h2 {
+    font-size: 16px;
+  }
+
+  /* Formulário */
+  form {
+    width: 95%;
+    padding: 12px;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  button {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  /* Lista de produtos */
+  .product-list {
+    flex-direction: column; /* empilha os produtos */
+    align-items: center;
+  }
+
+  .product-item {
+    width: 90%; /* ocupa quase toda largura */
+    margin: 8px 0;
+    padding: 8px;
+  }
+
+  .product-item img {
+    height: 120px; /* menor altura */
+  }
+
+  .produto-item p {
+    font-size: 12px;
+  }
+
+  .preco-desconto {
+    font-size: 14px;
+  }
+
+  .btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .delete-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Footer */
+  footer {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  /* Tabelas de administração */
+  .admin-table,
+  .pedidos-table,
+  .entrada-tabela {
+    font-size: 12px;
+    margin-top: 10px;
+    box-shadow: none;
+  }
+
+  .admin-table th, 
+  .admin-table td,
+  .pedidos-table th,
+  .pedidos-table td,
+  .entrada-tabela th,
+  .entrada-tabela td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .admin-table th,
+  .pedidos-table th,
+  .entrada-tabela th {
+    font-size: 13px;
+  }
+
+  /* Botões dentro das tabelas */
+  .btn-group {
+    flex-direction: column; /* empilha botões no mobile */
+    gap: 6px;
+  }
+
+  .btn-editar,
+  .btn-excluir,
+  .entrada-btn,
+  .entrada-tabela .remove {
+    font-size: 12px;
+    padding: 6px 8px;
+    min-width: auto;
+  }
+
+  /* Container de boas-vindas */
+  .welcome-container {
+    margin-top: 20px;
+    padding: 10px;
+  }
+
+  .logo-grande {
+    max-width: 150px;
+    margin-bottom: 10px;
+  }
+
+  .welcome-container h2 {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .welcome-container p {
+    font-size: 13px;
+  }
+
+  /* Seção de entrada de produtos */
+  .entrada-section {
+    padding: 15px 0;
+  }
+
+  .entrada-container {
+    max-width: 95%;
+    padding: 15px;
+  }
+
+  .entrada-container h2,
+  .entrada-container h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .entrada-form-group {
+    margin-bottom: 12px;
+  }
+
+  .entrada-form-group label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .entrada-form-group input,
+  .entrada-form-group select {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .entrada-btn {
+    font-size: 12px;
+    padding: 8px 12px;
+    margin-top: 8px;
+  }
+
+  .entrada-btn.finalizar {
+    margin-top: 15px;
+  }
+
+  /* Status dos pedidos */
+  .status-pendente,
+  .status-finalizado {
+    font-size: 12px;
+  }
+
+  /* Rodapé exclusivo */
+  .entrada-footer {
+    font-size: 12px;
+    padding: 8px 0;
+  }
+
+  /* Relatório e filtros */
+  .relatorio-filtro {
+    margin-bottom: 15px;
+    padding: 10px;
+  }
+
+  .filtro-grupo {
+    flex-direction: column; /* empilha filtros */
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .filtro-item {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .filtro-item label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .filtro-item input[type="date"] {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .filtro-item.botoes {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .filtro-item.botoes .entrada-btn {
+    font-size: 12px;
+    padding: 8px;
+    width: 100%;
+  }
+
+  /* Formulário dentro da tabela de pedidos */
+  .pedidos-table form {
+    margin: 6px 0;
+    display: block;
+    text-align: center;
+  }
+
+  /* Botão estorno */
+  .btn-estorno {
+    font-size: 12px;
+    padding: 6px 8px;
+    width: 100%;
+  }
+
+  /* Login container */
+  .login-container {
+    max-width: 95%;
+    padding: 12px;
+  }
+
+  .form-group {
+    margin-bottom: 10px;
+  }
+
+  input[type="email"],
+  input[type="password"] {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  /* Botão padrão */
+  button {
+    font-size: 13px;
+    padding: 8px;
+  }
+}

@@ -934,7 +934,7 @@
   }
 
   .login-container {
-    max-width: 95%;   /* ocupa quase toda largura */
+    max-width: 85%;   /* ocupa quase toda largura */
     padding: 15px;
     border-radius: 8px;
   }
