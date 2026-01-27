@@ -569,72 +569,76 @@ footer nav ul li a {
     margin: 0;
 }
 
-/* Estilo base */
-.product-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  padding: 10px;
-}
-
-.product-item {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
+/* Estilo para dispositivos móveis */
 /* Estilo para dispositivos móveis */
 @media (max-width: 600px) {
-  .product-item {
+  .item-carrossel {
     width: 100%;
-    margin: 0 auto;
+    margin: 10px auto;
+    padding: 10px;
+    box-sizing: border-box;
   }
 
-  .product-item img {
+  .item-carrossel img {
     width: 100%;
     height: auto;
+    max-height: 180px; /* limita altura da imagem */
+    object-fit: cover;
+    border-radius: 6px;
   }
 
-  .product-item h3 {
+  .item-carrossel h3 {
+    font-size: 16px;
+    margin: 8px 0;
+  }
+
+  .item-carrossel p {
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .item-carrossel .btn {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+/* 📲 Estilo para tablets */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .item-carrossel {
+    width: 45%;
+    margin: 15px 2.5%;
+  }
+
+  .item-carrossel h3 {
     font-size: 18px;
   }
 
-  .product-item p {
+  .item-carrossel p {
     font-size: 14px;
   }
-
-  .product-item button {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-  }
 }
 
-/* Estilo para tablets */
-@media (min-width: 601px) and (max-width: 1024px) {
-  .product-item {
-    width: 45%;
-  }
-}
-
-/* Estilo para desktops */
+/* 💻 Estilo para desktops */
 @media (min-width: 1025px) {
-  .product-item {
+  .item-carrossel {
     width: 30%;
+    margin: 20px 1.66%;
+    display: inline-block;
+    vertical-align: top;
   }
-}
 
-.produto-info h2 {
-    margin-top: 0;
-}
+  .item-carrossel h3 {
+    font-size: 20px;
+  }
 
-.produto-precos li {
-    list-style: none;
-    margin: 5px 0;
+  .item-carrossel p {
+    font-size: 15px;
+  }
 }
 
 .size-button {
