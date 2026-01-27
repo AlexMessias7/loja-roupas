@@ -1,3 +1,7 @@
+//git add .
+//git commit -m "ajustes de responsividade no CSS"
+//git push origin main      QUALQUER ATUALIZAÇÃO DO CSS
+
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');

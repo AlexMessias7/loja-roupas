@@ -570,8 +570,7 @@ footer nav ul li a {
 }
 
 /* Estilo para dispositivos móveis */
-/* Estilo para dispositivos móveis */
-@media (max-width: 600px) {
+@media (max-width: 400px) {
   .item-carrossel {
     width: 100%;
     margin: 10px auto;
