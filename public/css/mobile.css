@@ -286,3 +286,121 @@
   .produto-info ul {
     font-size: 12px;
   }
+
+  /* Botões de tamanho */
+  .size-button {
+    width: 28px;   /* aumenta um pouco para toque no celular */
+    height: 28px;
+    font-size: 12px;
+    padding: 6px;
+    margin: 4px;
+  }
+
+  /* Produto tamanhos */
+  .produto-tamanhos label {
+    font-size: 12px;
+  }
+
+  .produto-opcoes {
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  /* Detalhes do produto */
+  .produto-detalhes h2,
+  .avaliacao-produto h2,
+  .comentarios h2 {
+    font-size: 16px;
+    margin-top: 12px;
+  }
+
+  .produto-detalhes p,
+  .comentarios p {
+    font-size: 12px;
+    margin: 4px 0;
+  }
+
+  .produto-detalhes .preco-desconto {
+    font-size: 1.2em; /* menor no mobile */
+  }
+
+  /* Avaliação */
+  .avaliacao-produto .nota-media h3 {
+    font-size: 1.4em;
+  }
+
+  .avaliacao-produto .nota-media p,
+  .recomendacoes p {
+    font-size: 12px;
+  }
+
+  .rating .fa-star {
+    font-size: 16px;
+    margin-right: 3px;
+  }
+
+  /* Comentários */
+  .comentarios .comentario {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .comentarios .comentario h4 {
+    font-size: 13px;
+  }
+
+  /* Modal */
+  .modal-content {
+    width: 95%;
+    margin: 20% auto;
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .close {
+    font-size: 22px;
+  }
+
+  /* Tabela de medidas */
+  .tabela-medidas th,
+  .tabela-medidas td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .btn-tabela-medidas {
+    font-size: 13px;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+  }
+
+  .btn-tabela-medidas i {
+    font-size: 14px;
+    margin-right: 6px;
+  }
+
+  /* Botões de ação */
+  .comprar-btn,
+  .adicionar-carrinho-btn {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+
+  /* Botão de favoritos */
+  .favorito-btn-imagem {
+    top: 8px;
+    right: 8px;
+    padding: 6px;
+  }
+
+  .favorito-btn-imagem i {
+    font-size: 16px;
+  }
+
+  /* Alertas */
+  .alerta {
+    font-size: 12px;
+    padding: 8px 12px;
+    top: 5px;
+    right: 5px;
+  }
