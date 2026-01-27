@@ -31,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use('/imagens', express.static(path.join(__dirname, 'public/imagens')));
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 
