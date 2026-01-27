@@ -904,34 +904,6 @@ footer nav ul li a {
     position: relative; /* Permite ajustar elementos filhos como o contador */
 }
 
-.alerta {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    padding: 10px 20px;
-    background-color: #4caf50;
-    color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    font-size: 1rem;
-    z-index: 1000;
-    animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
-
-.alerta-error {
-    background-color: #f44336;
-}
-
-@keyframes fadein {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeout {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
 .carrinho-resumo-container {
     display: flex; /* Posiciona os itens lado a lado */
     flex-wrap: nowrap; /* Garante que não "quebrem" para baixo */

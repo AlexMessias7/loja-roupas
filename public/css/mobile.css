@@ -404,3 +404,525 @@
     top: 5px;
     right: 5px;
   }
+
+  /* Ícone do carrinho */
+  .carrinho-container {
+    margin-right: 10px;
+  }
+
+  #cartIcon {
+    font-size: 22px; /* menor ícone */
+  }
+
+  /* Container carrinho + resumo */
+  .carrinho-resumo-container {
+    flex-direction: column; /* empilha carrinho e resumo */
+    gap: 15px;
+    margin: 10px;
+  }
+
+  .carrinho-container1,
+  .itens-carrinho {
+    max-width: 100%;
+    margin-left: 0;
+    padding: 10px;
+  }
+
+  .item-carrinho {
+    flex-direction: column; /* imagem em cima, detalhes embaixo */
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  /* Imagem do produto */
+  .imagem-carrinho-container {
+    width: 100%;
+    align-items: center;
+  }
+
+  .imagem-carrinho {
+    max-width: 150px;
+    border-radius: 6px;
+  }
+
+  /* Detalhes do carrinho */
+  .detalhes-carrinho h3 {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .detalhes-carrinho p {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  /* Quantidade */
+  .texto-quantidade {
+    font-size: 12px;
+  }
+
+  .btn-quantidade {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .btn-quantidade i {
+    font-size: 12px;
+  }
+
+  /* Botão escolher mais produtos */
+  .btn.escolher-produtos {
+    font-size: 13px;
+    padding: 8px;
+    margin-top: 10px;
+  }
+
+  /* Resumo da compra */
+  .resumo-pedido {
+    max-width: 100%;
+    padding: 12px;
+  }
+
+  .resumo-pedido h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .resumo-linha {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .resumo-linha.total {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .resumo-pedido .btn {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  /* Cupom */
+  .cupom-container {
+    flex-direction: column; /* input e botão em coluna */
+    gap: 8px;
+  }
+
+  .cupom-container input {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .cupom-container button {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  #cupom-status {
+    font-size: 12px;
+  }
+
+  /* Carrinho vazio */
+  .carrinho-vazio .icone-carrinho-vazio,
+  .carrinho-vazio i {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+
+  .carrinho-vazio h2 {
+    font-size: 16px;
+    margin: 8px 0;
+  }
+
+  .carrinho-vazio p {
+    font-size: 13px;
+    margin: 6px 0;
+  }
+
+  .carrinho-vazio .btn {
+    font-size: 13px;
+    padding: 8px 12px;
+    margin-top: 10px;
+  }
+
+  /* Select forma de pagamento */
+  .resumo-linha label[for="tipo-pagamento"] {
+    font-size: 13px;
+  }
+
+  #tipo-pagamento {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .finalizar-compra {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  /* Título da página */
+  main h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  /* Ordenação */
+  .ordenar {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .ordenar label {
+    font-size: 12px;
+    margin-right: 4px;
+  }
+
+  .ordenar select {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  /* Sem resultados */
+  .sem-resultados {
+    margin: 20px auto;
+    padding: 10px;
+  }
+
+  .sem-resultados p {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .sem-resultados .btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Produto nome e cor */
+  .produto-nome {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .produto-cor {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  /* Bloco de compra */
+  .bloco-compra {
+    padding: 15px;
+    margin-top: 15px;
+  }
+
+  .preco-destaque {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .parcelamento {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .botoes-compra {
+    gap: 8px;
+  }
+
+  .adicionar-carrinho-btn,
+  .comprar-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .adicionar-carrinho-btn i {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+
+  .ver-mais-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Carrossel */
+  .carrossel {
+    gap: 10px;
+    padding-bottom: 6px;
+  }
+
+  .item-carrossel {
+    min-width: 180px;
+    max-width: 180px;
+    margin-right: 6px;
+  }
+
+  .item-carrossel img {
+    height: 140px;
+    margin-bottom: 6px;
+  }
+
+  .item-carrossel h3 {
+    font-size: 13px;
+    margin: 4px 0;
+  }
+
+  .item-carrossel p {
+    font-size: 12px;
+    margin: 3px 0;
+  }
+
+  .item-carrossel .btn {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .favorito-btn-imagem {
+    top: 6px;
+    right: 6px;
+    padding: 4px;
+  }
+
+  .seta {
+    font-size: 18px;
+    padding: 6px;
+  }
+
+  /* Favoritos vazio */
+  .favoritos-vazio {
+    padding: 20px 0;
+  }
+
+  /* Explorar */
+  .explorar-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+    margin-top: 10px;
+  }
+
+  /* Container resultados */
+  .container-resultados {
+    margin: 10px;
+    padding: 0;
+  }
+
+  .container-resultados h2 {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .filtros-container {
+    flex-direction: column;
+    gap: 8px;
+    margin: 10px 0;
+    padding: 6px;
+  }
+
+  .filtros-botoes {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-filtro {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Produto gênero */
+  .produto-genero {
+    font-size: 16px;
+    margin: 6px 0;
+  }
+
+  /* Confirmação de pedido */
+  .confirmacao-pedido {
+    min-height: 60vh;
+    padding: 20px 10px;
+  }
+
+  .confirmacao-pedido .container {
+    max-width: 95%;
+    padding: 15px;
+  }
+
+  .confirmacao-pedido h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .confirmacao-pedido p {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .confirmacao-pedido .btn {
+    font-size: 13px;
+    padding: 8px 12px;
+    margin-top: 12px;
+  }
+
+  /* Área do cliente */
+  .area-cliente {
+    padding: 20px 10px;
+  }
+
+  .boas-vindas {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .boas-vindas h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .boas-vindas p {
+    font-size: 13px;
+  }
+
+  .acoes-cliente {
+    flex-direction: column; /* botões em coluna */
+    gap: 10px;
+  }
+
+  .acoes-cliente .btn {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  /* Mensagem vazia */
+  .mensagem-vazia {
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 95%;
+  }
+
+  .mensagem-vazia h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .mensagem-vazia p {
+    font-size: 13px;
+    margin-bottom: 15px;
+  }
+
+  .btn-explorar {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  /* Login modal */
+  .login-modal-content {
+    width: 90%;
+    margin: 30% auto;
+    padding: 15px;
+  }
+
+  .login-modal-content h2 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .login-modal-content p {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .fechar-login-modal {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  /* Blocos de pedidos */
+  .pedido-bloco {
+    padding: 10px;
+  }
+
+  .pedido-tabela th {
+    width: auto;
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .pedido-tabela td {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .status-pedido {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .itens-pedido {
+    flex-direction: column; /* itens em coluna */
+    gap: 8px;
+  }
+
+  .item-card {
+    width: 100%;
+    padding: 6px;
+  }
+
+  .item-imagem {
+    width: 50px;
+    height: 50px;
+  }
+
+  .item-detalhes h4 {
+    font-size: 13px;
+  }
+
+  .item-detalhes p {
+    font-size: 12px;
+  }
+
+  /* Login section */
+  .login-section {
+    padding: 20px;
+    min-height: auto;
+  }
+
+  .login-container {
+    max-width: 95%;
+    padding: 15px;
+  }
+
+  .login-container h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .login-container p {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Formulário */
+  .login-form .form-group {
+    margin-bottom: 12px;
+  }
+
+  .login-form label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .login-form input {
+    padding: 8px 28px 8px 10px;
+    font-size: 12px;
+  }
+
+  .login-form .form-group::before {
+    font-size: 14px;
+    top: 24px;
+  }
+
+  /* Botão login */
+  .btn-login {
+    font-size: 13px;
+    padding: 10px;
+  }
