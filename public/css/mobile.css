@@ -1,0 +1,83 @@
+@media (max-width: 600px) {
+  /* Header */
+  header {
+    height: auto;              /* remove altura fixa */
+    flex-direction: column;    /* empilha logo, pesquisa e menu */
+    padding: 10px;
+  }
+
+  header .logo {
+    width: 60px;               /* logo menor */
+    margin: 5px auto;
+    float: none;               /* remove float */
+  }
+
+  header .logo_1 {
+    width: 120px;              /* segunda logo menor */
+    margin: 5px auto;
+    float: none;
+  }
+
+  header .barra-pesquisa {
+    width: 100%;
+    margin: 10px auto;
+    padding-top: 0;            /* remove padding exagerado */
+    position: relative;
+    justify-content: center;
+  }
+
+  header .barra-pesquisa input {
+    width: 90%;                /* ocupa quase toda largura */
+    padding: 6px 30px 6px 10px;
+    font-size: 12px;
+  }
+
+  header .barra-pesquisa .fa-search {
+    right: 20px;               /* ajusta posição do ícone */
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  header nav ul {
+    flex-direction: column;    /* menu em coluna */
+    align-items: center;
+    margin: 10px 0;
+  }
+
+  header nav ul li {
+    margin: 5px 0;
+    font-size: 12px;
+  }
+
+  header nav ul li a {
+    font-size: 12px;
+  }
+
+  header nav ul li a .fa-shopping-cart {
+    font-size: 20px;           /* ícone menor */
+  }
+
+  /* Footer */
+  footer .container {
+    text-align: center;
+    padding: 10px;
+  }
+
+  footer nav ul {
+    display: flex;
+    flex-wrap: wrap;           /* permite quebrar em linhas */
+    justify-content: center;
+    padding: 0;
+    margin: 5px 0;
+  }
+
+  footer nav ul li {
+    margin: 3px 8px;
+    font-size: 11px;
+  }
+
+  footer p {
+    font-size: 11px;
+    margin-top: 5px;
+  }
+}
