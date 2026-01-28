@@ -972,10 +972,13 @@ app.get('/pedido-confirmado', (req, res) => {
   res.render('pedido-confirmado', { numero });
 });
 
-app.put('/admin/produtos/:id', upload, async (req, res) => {
+app.put('/admin/produtos/:id', upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'extraImages', maxCount: 3 }
+]), async (req, res) => {
   try {
-    // Trata imagens extras (se enviadas)
-    const extraImages = (req.files.extraImages || []).map(file => '/images/' + file.filename);
+    // Trata imagens extras (se enviadas) → agora vem com URL do Cloudinary
+    const extraImages = (req.files.extraImages || []).map(file => file.path);
 
     // Preço original (obrigatório)
     const originalPrice = parseFloat(req.body.originalPrice);
@@ -1007,12 +1010,12 @@ app.put('/admin/produtos/:id', upload, async (req, res) => {
       gender: req.body.gender
     };
 
-    // Atualiza imagem principal se enviada
+    // Atualiza imagem principal se enviada → URL do Cloudinary
     if (req.files.image && req.files.image.length > 0) {
-      updatedProduct.image = '/images/' + req.files.image[0].filename;
+      updatedProduct.image = req.files.image[0].path;
     }
 
-    // Atualiza imagens extras se enviadas
+    // Atualiza imagens extras se enviadas → URLs do Cloudinary
     if (extraImages.length > 0) {
       updatedProduct.extraImages = extraImages;
     }
