@@ -31,7 +31,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use('/imagens', express.static(path.join(__dirname, 'public/images')));
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 
@@ -126,19 +125,25 @@ const cartSchema = new mongoose.Schema({
 const Cart = mongoose.model('Cart', cartSchema);
 
 // ---- Configuração do Multer ----
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/images');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const upload = multer({ storage }).fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'extraImages', maxCount: 3 },
-]);
+// Configuração do Multer para usar Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'loja-roupas', // nome da pasta no Cloudinary
+    allowed_formats: ['jpg', 'png', 'jpeg'],
+  },
+});
+
+const upload = multer({ storage });
 
 // modelo de pedido
 const pedidoSchema = new mongoose.Schema({
@@ -829,13 +834,16 @@ app.get('/admin/produtos', async (req, res) => {
     }
 });
 
-app.post('/admin/produtos', upload, async (req, res) => {
+app.post('/admin/produtos', upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'extraImages', maxCount: 3 }
+]), async (req, res) => {
   try {
-    // Trata imagens extras (se existirem)
-    const extraImages = (req.files.extraImages || []).map(file => '/images/' + file.filename);
+    // Trata imagens extras (se existirem) → agora vem com URL do Cloudinary
+    const extraImages = (req.files.extraImages || []).map(file => file.path);
 
-    // Trata imagem principal (se não enviada, fica null)
-    const image = req.files.image ? '/images/' + req.files.image[0].filename : null;
+    // Trata imagem principal (se não enviada, fica null) → também URL do Cloudinary
+    const image = req.files.image ? req.files.image[0].path : null;
 
     // Preço original (obrigatório)
     const originalPrice = parseFloat(req.body.originalPrice);
@@ -855,8 +863,8 @@ app.post('/admin/produtos', upload, async (req, res) => {
       originalPrice,
       discountedPrice,
       description: req.body.description,
-      image,
-      extraImages,
+      image,              // agora é a URL do Cloudinary
+      extraImages,        // lista de URLs do Cloudinary
       category: req.body.category,
       stock: 0,
       stockMax: req.body.stockMax ? parseInt(req.body.stockMax) : 0,
