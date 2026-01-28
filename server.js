@@ -71,13 +71,13 @@ app.use((req, res, next) => {
 // Resolve bloqueios de recursos externos no navegador
 app.use((req, res, next) => {
     res.setHeader(
-        'Content-Security-Policy',
-        "default-src 'self'; " +
-        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://translate.googleapis.com; " +
-        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; " +
-        "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; " +
-        "img-src 'self' data: https://cdn.seusite.com https://s3.amazonaws.com;" +
-        "connect-src 'self' http://localhost:3000 https://translate.googleapis.com;"
+      'Content-Security-Policy',
+      "default-src 'self'; " +
+      "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://translate.googleapis.com; " +
+      "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com; " +
+      "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; " +
+      "img-src 'self' data: https://res.cloudinary.com; " +
+      "connect-src 'self' https://translate.googleapis.com;"
     );
     next();
 });
@@ -1019,6 +1019,8 @@ app.put('/admin/produtos/:id', upload.fields([
     if (extraImages.length > 0) {
       updatedProduct.extraImages = extraImages;
     }
+    console.log(req.files)
+    console.log(updatedProduct)
 
     // Atualiza no banco
     await Product.findByIdAndUpdate(req.params.id, updatedProduct);
