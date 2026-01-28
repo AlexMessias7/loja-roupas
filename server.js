@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use('/imagens', express.static(path.join(__dirname, 'public/imagens')));
+app.use('/imagens', express.static(path.join(__dirname, 'public/images')));
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 
@@ -77,7 +77,7 @@ app.use((req, res, next) => {
         "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://translate.googleapis.com; " +
         "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; " +
         "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; " +
-        "img-src 'self' data:; " +
+        "img-src 'self' data: https://cdn.seusite.com https://s3.amazonaws.com;" +
         "connect-src 'self' http://localhost:3000 https://translate.googleapis.com;"
     );
     next();
@@ -113,6 +113,107 @@ const clienteSchema = new mongoose.Schema({
 
 const Cliente = mongoose.model('Cliente', clienteSchema);
 module.exports = Cliente;
+
+// ---- Esquema do Carrinho ----
+const cartSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    items: [{ id: String, name: String, price: Number, image: String, size: String }],
+    subtotal: Number,
+    shipping: Number,
+    total: Number,
+});
+
+const Cart = mongoose.model('Cart', cartSchema);
+
+// ---- Configuração do Multer ----
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/images');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+});
+
+const upload = multer({ storage }).fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'extraImages', maxCount: 3 },
+]);
+
+// modelo de pedido
+const pedidoSchema = new mongoose.Schema({
+  orderNumber: { type: String, required: true }, // número do pedido
+  cliente: { type: mongoose.Schema.Types.ObjectId, ref: "Cliente", required: true },
+  items: [
+    {
+      produto: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }, // ref deve bater com o nome do modelo de Produto
+      quantidade: Number,
+      precoUnitario: Number
+    }
+  ],
+  total: Number,
+  status: {
+    type: String,
+    enum: ['Aguardando pagamento', 'Finalizado', 'Cancelado', 'Estornado'],
+    default: 'Aguardando pagamento'
+  },
+  data: { type: Date, default: Date.now }
+});
+
+const Pedido = mongoose.model('Pedido', pedidoSchema);
+
+// ---- Esquema do Produto ----
+const productSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    originalPrice: { type: Number, required: true },
+    discountedPrice: { type: Number },
+    description: String,
+    image: String,
+    category: String,
+    stock: { type: Number, required: true },
+    stockMax: { type: Number, required: true },   // novo campo
+    stockMin: { type: Number, required: true },   // novo campo
+    isFeatured: { type: Boolean, default: false },
+    isOnSale: { type: Boolean, default: false },
+    comments: [
+        {
+            user: String,
+            text: String,
+            rating: Number,
+        },
+    ],
+    ratingAverage: { type: Number, default: 0 },
+    ratingCount: { type: Number, default: 0 },
+    recommendationPercentage: { type: Number, default: 0 },
+    maxInstallments: { type: Number, required: true },
+    installmentValue: Number,
+    gender: { type: String, enum: ['Masculino', 'Feminino', 'Unissex'], required: true },
+    sizes: {
+        type: [String],
+        enum: ['P', 'M', 'G', 'GG'], // Apenas permite tamanhos válidos
+        default: [],
+    },
+    extraImages: [String],
+});
+
+const Product = mongoose.model('Product', productSchema);
+
+const entradaSchema = new mongoose.Schema({
+  codigo: String, // ex: ENTRADA-20260120-001
+  pedidoNumero: String,
+  data: { type: Date, default: Date.now },
+  itens: [
+    {
+      produto: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+      quantidade: Number,
+      preco: Number,
+      desconto: Number,
+      total: Number
+    }
+  ]
+});
+
+const Entrada = mongoose.model('Entrada', entradaSchema);
 
 // rota de cadastro
 app.post('/cadastro', async (req, res) => {
@@ -333,54 +434,6 @@ app.get('/logout', (req, res) => {
   });
 });
 
-// ---- Esquema do Carrinho ----
-const cartSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    items: [{ id: String, name: String, price: Number, image: String, size: String }],
-    subtotal: Number,
-    shipping: Number,
-    total: Number,
-});
-
-const Cart = mongoose.model('Cart', cartSchema);
-
-// ---- Configuração do Multer ----
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/images');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
-});
-
-const upload = multer({ storage }).fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'extraImages', maxCount: 3 },
-]);
-
-// modelo de pedido
-const pedidoSchema = new mongoose.Schema({
-  orderNumber: { type: String, required: true }, // número do pedido
-  cliente: { type: mongoose.Schema.Types.ObjectId, ref: "Cliente", required: true },
-  items: [
-    {
-      produto: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }, // ref deve bater com o nome do modelo de Produto
-      quantidade: Number,
-      precoUnitario: Number
-    }
-  ],
-  total: Number,
-  status: {
-    type: String,
-    enum: ['Aguardando pagamento', 'Finalizado', 'Cancelado', 'Estornado'],
-    default: 'Aguardando pagamento'
-  },
-  data: { type: Date, default: Date.now }
-});
-
-const Pedido = mongoose.model('Pedido', pedidoSchema);
-
 app.post('/admin/pedidos/:id/cancelar', async (req, res) => {
   try {
     await Pedido.findByIdAndUpdate(req.params.id, { status: "Cancelado" });
@@ -390,42 +443,6 @@ app.post('/admin/pedidos/:id/cancelar', async (req, res) => {
     res.status(500).send("Erro ao cancelar pedido");
   }
 });
-
-// ---- Esquema do Produto ----
-const productSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    originalPrice: { type: Number, required: true },
-    discountedPrice: { type: Number },
-    description: String,
-    image: String,
-    category: String,
-    stock: { type: Number, required: true },
-    stockMax: { type: Number, required: true },   // novo campo
-    stockMin: { type: Number, required: true },   // novo campo
-    isFeatured: { type: Boolean, default: false },
-    isOnSale: { type: Boolean, default: false },
-    comments: [
-        {
-            user: String,
-            text: String,
-            rating: Number,
-        },
-    ],
-    ratingAverage: { type: Number, default: 0 },
-    ratingCount: { type: Number, default: 0 },
-    recommendationPercentage: { type: Number, default: 0 },
-    maxInstallments: { type: Number, required: true },
-    installmentValue: Number,
-    gender: { type: String, enum: ['Masculino', 'Feminino', 'Unissex'], required: true },
-    sizes: {
-        type: [String],
-        enum: ['P', 'M', 'G', 'GG'], // Apenas permite tamanhos válidos
-        default: [],
-    },
-    extraImages: [String],
-});
-
-const Product = mongoose.model('Product', productSchema);
 
 app.get("/dados-cliente-logado", async (req, res) => {
   if (!req.session.clienteId) {
@@ -500,23 +517,6 @@ app.get('/admin/entrada/incluir', async (req, res) => {
   const products = await Product.find();
   res.render('admin-entrada', { products }); // abre a tela de inclusão
 });
-
-const entradaSchema = new mongoose.Schema({
-  codigo: String, // ex: ENTRADA-20260120-001
-  pedidoNumero: String,
-  data: { type: Date, default: Date.now },
-  itens: [
-    {
-      produto: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-      quantidade: Number,
-      preco: Number,
-      desconto: Number,
-      total: Number
-    }
-  ]
-});
-
-const Entrada = mongoose.model('Entrada', entradaSchema);
 
 // Processar entrada de estoque
 app.post('/admin/entrada', async (req, res) => {
