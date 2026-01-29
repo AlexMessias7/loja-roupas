@@ -52,9 +52,7 @@
                     <label for="image">Imagem Principal:</label>
                     <input type="file" id="image" name="image" accept="image/*">
                     <% if (product.image) { %>
-                        <img src="<%= product.image %>" alt="<%= product.name %>" class="current-image"
-                             style="width:80px; margin-top:10px;" 
-                             onerror="this.src='https://res.cloudinary.com/SEU_CLOUD_NAME/image/upload/v1234567890/loja-roupas/default.jpg'">
+                        <img src="<%= product.image %>" alt="<%= product.name %>" class="fallback-image current-image" style="width:80px; margin-top:10px;">
                     <% } %>
                 </div>
 
@@ -65,8 +63,7 @@
                     <% if (product.extraImages && product.extraImages.length > 0) { %>
                         <div class="imagem-existente">
                             <% product.extraImages.forEach(function(image) { %>
-                                <img src="<%= image %>" alt="Imagem Adicional" width="80"
-                                     onerror="this.src='https://res.cloudinary.com/SEU_CLOUD_NAME/image/upload/v1234567890/loja-roupas/default.jpg'">
+                                <img src="<%= image %>" alt="Imagem Adicional" class="fallback-image" width="80">
                             <% }) %>
                         </div>
                     <% } %>
@@ -132,5 +129,14 @@
             <p>&copy; 2025 CREED GODS. Todos os direitos reservados.</p>
         </div>
     </footer>
+
+    <!-- Fallback de imagem via JavaScript -->
+    <script>
+      document.querySelectorAll('.fallback-image').forEach(img => {
+        img.addEventListener('error', () => {
+          img.src = 'https://res.cloudinary.com/dr5e0uynoimage/upload/v1234567890/loja-roupas/default.jpg';
+        });
+      });
+    </script>
 </body>
 </html>
