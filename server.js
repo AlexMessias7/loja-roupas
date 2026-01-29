@@ -977,22 +977,20 @@ app.put('/admin/produtos/:id', upload.fields([
   { name: 'extraImages', maxCount: 3 }
 ]), async (req, res) => {
   try {
-    // Trata imagens extras (se enviadas) → agora vem com URL do Cloudinary
-    const extraImages = (req.files.extraImages || []).map(file => file.path);
+    console.log('Arquivos recebidos:', req.files);
 
-    // Preço original (obrigatório)
+    const extraImages = Array.isArray(req.files.extraImages)
+      ? req.files.extraImages.map(file => file.path)
+      : [];
+
     const originalPrice = parseFloat(req.body.originalPrice);
-
-    // Se não houver preço com desconto, assume o original
     const discountedPrice = req.body.discountedPrice
       ? parseFloat(req.body.discountedPrice)
       : originalPrice;
 
-    // Parcelas (se não informado, assume 1)
     const maxInstallments = parseInt(req.body.maxInstallments) || 1;
     const installmentValue = (discountedPrice / maxInstallments).toFixed(2);
 
-    // Monta objeto atualizado
     const updatedProduct = {
       name: req.body.name,
       originalPrice,
@@ -1010,21 +1008,17 @@ app.put('/admin/produtos/:id', upload.fields([
       gender: req.body.gender
     };
 
-    // Atualiza imagem principal se enviada → URL do Cloudinary
-    if (req.files.image && req.files.image.length > 0) {
+    if (Array.isArray(req.files.image) && req.files.image.length > 0) {
       updatedProduct.image = req.files.image[0].path;
     }
 
-    // Atualiza imagens extras se enviadas → URLs do Cloudinary
     if (extraImages.length > 0) {
       updatedProduct.extraImages = extraImages;
     }
-    console.log(req.files)
-    console.log(updatedProduct)
 
-    // Atualiza no banco
+    console.log('Produto atualizado:', updatedProduct);
+
     await Product.findByIdAndUpdate(req.params.id, updatedProduct);
-
     res.redirect('/admin/produtos');
   } catch (err) {
     console.error('Erro ao atualizar produto:', err);

@@ -55,7 +55,7 @@
 
                 <div class="form-group">
                     <label for="extraImages">Atualizar Imagens Adicionais:</label>
-                    <input type="file" name="extraImages" accept="image/*" multiple>
+                    <input type="file" name="extraImages[]" accept="image/*" multiple>
                     <% if (product.extraImages && product.extraImages.length > 0) { %>
                         <div class="imagem-existente">
                             <% product.extraImages.forEach(function(image) { %>
