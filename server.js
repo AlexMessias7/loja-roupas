@@ -1044,6 +1044,19 @@ app.put('/admin/produtos/:id', upload.fields([
   }
 });
 
+app.get('/admin/produtos/:id/editar', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).send('Produto não encontrado');
+    }
+    res.render('edit-product', { product });
+  } catch (err) {
+    console.error('Erro ao carregar produto para edição:', err.message);
+    res.status(500).send('Erro ao carregar produto');
+  }
+});
+
 app.get('/admin/produtos/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
