@@ -48,9 +48,9 @@
                 <div class="form-group">
                     <label for="image">Imagem Principal:</label>
                     <input type="file" id="image" name="image" accept="image/*">
-                    <% if (product.image) { %>
-                        <img src="<%= product.image %>" alt="<%= product.name %>" class="current-image" style="width:80px; margin-top:10px;">
-                    <% } %>
+                        <% if (product.image) { %>
+                            <img src="<%= product.image %>" alt="<%= product.name %>" class="current-image" style="width:80px; margin-top:10px;" onerror="this.src='/images/default.jpg'">
+                        <% } %>
                 </div>
 
                 <div class="form-group">
@@ -59,7 +59,7 @@
                     <% if (product.extraImages && product.extraImages.length > 0) { %>
                         <div class="imagem-existente">
                             <% product.extraImages.forEach(function(image) { %>
-                                <img src="<%= image %>" alt="Imagem Adicional" width="80">
+                             <img src="<%= image %>" alt="Imagem Adicional" width="80" onerror="this.src='/images/default.jpg'">
                             <% }) %>
                         </div>
                     <% } %>
