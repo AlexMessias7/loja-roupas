@@ -839,10 +839,16 @@ app.post('/admin/produtos', upload.fields([
 ]), async (req, res) => {
   try {
     // Trata imagens extras (se existirem) → agora vem com URL do Cloudinary
-    const extraImages = (req.files.extraImages || []).map(file => file.path);
+    let extraImages = [];
+      if (req.files && req.files.extraImages && req.files.extraImages.length > 0) {
+        extraImages = req.files.extraImages.map(file => file.path);
+      }
 
     // Trata imagem principal (se não enviada, fica null) → também URL do Cloudinary
-    const image = req.files?.image?.[0]?.path ?? undefined;
+    let image = null;
+      if (req.files && req.files.image && req.files.image.length > 0) {
+        image = req.files.image[0].path;
+      }
 
     // Preço original (obrigatório)
     const originalPrice = parseFloat(req.body.originalPrice);
