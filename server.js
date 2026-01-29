@@ -74,8 +74,9 @@ app.use((req, res, next) => {
       'Content-Security-Policy',
       "default-src 'self'; " +
       "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://translate.googleapis.com; " +
-      "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com; " +
-      "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; " +
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; " +
+      "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; " +
+      "font-src 'self' https://fonts.gstatic.com; " +
       "img-src 'self' data: https://res.cloudinary.com; " +
       "connect-src 'self' https://translate.googleapis.com;"
     );
