@@ -19,19 +19,6 @@ const helmet = require('helmet');
 
 const app = express();
 
-// ---- Configuração da Política de Segurança (CSP) ----
-// Resolve bloqueios de recursos externos no navegador
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'", 'https://www.gstatic.com'],
-      styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
-    }
-  }
-}));
-
 // ---- Conexão ao MongoDB ----
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -47,6 +34,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
+
+// ---- Configuração da Política de Segurança (CSP) ----
+// Resolve bloqueios de recursos externos no navegador
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'", 'https://www.gstatic.com'],
+      styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
+    }
+  }
+}));
 
 // ---- Configuração de Sessões ----
 // Sessão precisa ser configurada antes de qualquer uso de `req.session`
