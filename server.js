@@ -15,8 +15,22 @@ const axios = require('axios');
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 const nodemailer = require('nodemailer');
+const helmet = require('helmet');
 
 const app = express();
+
+// ---- Configuração da Política de Segurança (CSP) ----
+// Resolve bloqueios de recursos externos no navegador
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'", 'https://www.gstatic.com'],
+      styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
+    }
+  }
+}));
 
 // ---- Conexão ao MongoDB ----
 mongoose.connect(process.env.MONGO_URI, {
@@ -64,22 +78,6 @@ app.use((req, res, next) => {
     }
 
     console.log('Sessão do Carrinho:', req.session.cart); // Log para depuração
-    next();
-});
-
-// ---- Configuração da Política de Segurança (CSP) ----
-// Resolve bloqueios de recursos externos no navegador
-app.use((req, res, next) => {
-    res.setHeader(
-      'Content-Security-Policy',
-      "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://translate.googleapis.com; " +
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; " +
-      "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; " +
-      "font-src 'self' https://fonts.gstatic.com; " +
-      "img-src 'self' data: https://res.cloudinary.com; " +
-      "connect-src 'self' https://translate.googleapis.com;"
-    );
     next();
 });
 
