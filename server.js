@@ -975,7 +975,7 @@ app.get('/pedido-confirmado', (req, res) => {
 
 app.put('/admin/produtos/:id', upload.fields([
   { name: 'image', maxCount: 1 },
-  { name: 'extraImages', maxCount: 3 }
+  { name: 'extraImages', maxCount: 5 }
 ]), async (req, res) => {
   try {
     // Logs para depuração
@@ -988,12 +988,13 @@ app.put('/admin/produtos/:id', upload.fields([
       : [];
 
     // Trata imagem principal (se enviada)
-    const image = Array.isArray(req.files?.image) && req.files.image.length > 0
-      ? req.files.image[0].path
-      : null;
+    const image = req.files?.image?.[0]?.path || null;
 
     // Preço original (obrigatório)
     const originalPrice = parseFloat(req.body.originalPrice);
+    if (isNaN(originalPrice)) {
+      throw new Error('Preço original inválido');
+    }
 
     // Se não houver preço com desconto, assume o original
     const discountedPrice = req.body.discountedPrice
@@ -1004,13 +1005,20 @@ app.put('/admin/produtos/:id', upload.fields([
     const maxInstallments = parseInt(req.body.maxInstallments) || 1;
     const installmentValue = (discountedPrice / maxInstallments).toFixed(2);
 
+    // Trata tamanhos (checkboxes podem vir como string ou array)
+    const sizes = Array.isArray(req.body.sizes)
+      ? req.body.sizes
+      : req.body.sizes
+        ? [req.body.sizes]
+        : [];
+
     // Monta objeto atualizado
     const updatedProduct = {
       name: req.body.name,
       originalPrice,
       discountedPrice,
-      description: req.body.description,
-      category: req.body.category,
+      description: req.body.description || '',
+      category: req.body.category || '',
       stock: req.body.stock ? parseInt(req.body.stock) : 0,
       stockMax: req.body.stockMax ? parseInt(req.body.stockMax) : 0,
       stockMin: req.body.stockMin ? parseInt(req.body.stockMin) : 0,
@@ -1018,7 +1026,7 @@ app.put('/admin/produtos/:id', upload.fields([
       isOnSale: !!req.body.isOnSale,
       maxInstallments,
       installmentValue,
-      sizes: Array.isArray(req.body.sizes) ? req.body.sizes : [req.body.sizes],
+      sizes,
       gender: req.body.gender
     };
 
@@ -1035,15 +1043,16 @@ app.put('/admin/produtos/:id', upload.fields([
     console.log('Produto atualizado:', updatedProduct);
 
     // Atualiza no banco
-    await Product.findByIdAndUpdate(req.params.id, updatedProduct);
+    await Product.findByIdAndUpdate(req.params.id, updatedProduct, { new: true });
 
     res.redirect('/admin/produtos');
   } catch (err) {
-    console.error('Erro ao atualizar produto:', err.message);
+    console.error('Erro ao atualizar produto:', err.message, err.stack);
     res.status(500).send('Erro ao atualizar produto: ' + err.message);
   }
 });
 
+// Rota para abrir o formulário de edição (mais explícita)
 app.get('/admin/produtos/:id/editar', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -1052,32 +1061,28 @@ app.get('/admin/produtos/:id/editar', async (req, res) => {
     }
     res.render('edit-product', { product });
   } catch (err) {
-    console.error('Erro ao carregar produto para edição:', err.message);
-    res.status(500).send('Erro ao carregar produto');
+    console.error('Erro ao carregar produto para edição:', err.message, err.stack);
+    res.status(500).send('Erro ao carregar produto: ' + err.message);
   }
 });
 
-app.get('/admin/produtos/:id', async (req, res) => {
+// Se você quiser manter a rota sem "/editar", pode deixar como redirecionamento
+app.get('/admin/produtos/:id', (req, res) => {
+  res.redirect(`/admin/produtos/${req.params.id}/editar`);
+});
+
+// Rota para excluir produto
+app.delete('/admin/produtos/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+    if (!deleted) {
       return res.status(404).send('Produto não encontrado');
     }
-    res.render('edit-product', { product });
+    res.redirect('/admin/produtos');
   } catch (err) {
-    console.error('Erro ao carregar produto para edição:', err.message);
-    res.status(500).send('Erro ao carregar produto');
+    console.error('Erro ao excluir produto:', err.message, err.stack);
+    res.status(500).send('Erro ao excluir produto: ' + err.message);
   }
-});
-
-app.delete('/admin/produtos/:id', async (req, res) => {
-    try {
-        await Product.findByIdAndDelete(req.params.id);
-        res.redirect('/admin/produtos');
-    } catch (err) {
-        console.error(err);
-        res.send('Erro ao excluir produto');
-    }
 });
 
 // Rota para a página inicial

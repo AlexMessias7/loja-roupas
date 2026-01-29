@@ -30,11 +30,13 @@
             <h2>Editar Produto</h2>
             <form action="/admin/produtos/<%= product._id %>?_method=PUT" method="post" enctype="multipart/form-data">
                 
+                <!-- Nome -->
                 <div class="form-group">
                     <label for="name">Nome do Produto:</label>
                     <input type="text" id="name" name="name" value="<%= product.name %>" required>
                 </div>
 
+                <!-- Preços -->
                 <div class="form-group">
                     <label for="originalPrice">Preço Original:</label>
                     <input type="number" id="originalPrice" name="originalPrice" step="0.01" value="<%= product.originalPrice %>" required>
@@ -42,29 +44,35 @@
 
                 <div class="form-group">
                     <label for="discountedPrice">Preço com Desconto:</label>
-                    <input type="number" id="discountedPrice" name="discountedPrice" step="0.01" value="<%= product.discountedPrice %>">
+                    <input type="number" id="discountedPrice" name="discountedPrice" step="0.01" value="<%= product.discountedPrice || '' %>">
                 </div>
 
+                <!-- Imagem principal -->
                 <div class="form-group">
                     <label for="image">Imagem Principal:</label>
                     <input type="file" id="image" name="image" accept="image/*">
-                        <% if (product.image) { %>
-                            <img src="<%= product.image %>" alt="<%= product.name %>" class="current-image" style="width:80px; margin-top:10px;" onerror="this.src='/images/default.jpg'">
-                        <% } %>
+                    <% if (product.image) { %>
+                        <img src="<%= product.image %>" alt="<%= product.name %>" class="current-image"
+                             style="width:80px; margin-top:10px;" 
+                             onerror="this.src='https://res.cloudinary.com/SEU_CLOUD_NAME/image/upload/v1234567890/loja-roupas/default.jpg'">
+                    <% } %>
                 </div>
 
+                <!-- Imagens adicionais -->
                 <div class="form-group">
                     <label for="extraImages">Atualizar Imagens Adicionais:</label>
                     <input type="file" name="extraImages[]" accept="image/*" multiple>
                     <% if (product.extraImages && product.extraImages.length > 0) { %>
                         <div class="imagem-existente">
                             <% product.extraImages.forEach(function(image) { %>
-                             <img src="<%= image %>" alt="Imagem Adicional" width="80" onerror="this.src='/images/default.jpg'">
+                                <img src="<%= image %>" alt="Imagem Adicional" width="80"
+                                     onerror="this.src='https://res.cloudinary.com/SEU_CLOUD_NAME/image/upload/v1234567890/loja-roupas/default.jpg'">
                             <% }) %>
                         </div>
                     <% } %>
                 </div>                
 
+                <!-- Gênero -->
                 <div class="form-group">
                     <label for="gender">Gênero:</label>
                     <select id="gender" name="gender" required>
@@ -74,6 +82,7 @@
                     </select>
                 </div>
 
+                <!-- Tamanhos -->
                 <div class="form-group">
                     <label for="sizes">Tamanhos:</label>
                     <div>
@@ -85,11 +94,13 @@
                     </div>
                 </div>
 
+                <!-- Parcelas -->
                 <div class="form-group">
                     <label for="maxInstallments">Número Máximo de Parcelas:</label>
                     <input type="number" id="maxInstallments" name="maxInstallments" value="<%= product.maxInstallments %>" required>
                 </div>
 
+                <!-- Estoque -->
                 <div class="form-group">
                     <label for="stockMax">Estoque Máximo:</label>
                     <input type="number" id="stockMax" name="stockMax" value="<%= product.stockMax %>" required>
@@ -100,6 +111,7 @@
                     <input type="number" id="stockMin" name="stockMin" value="<%= product.stockMin %>" required>
                 </div>
 
+                <!-- Flags -->
                 <div class="form-group">
                     <label for="isFeatured">Destaque:</label>
                     <input type="checkbox" id="isFeatured" name="isFeatured" <%= product.isFeatured ? 'checked' : '' %>>
