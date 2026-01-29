@@ -40,7 +40,8 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'", 'https://www.gstatic.com'],
-      styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
+      styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', "'unsafe-inline'"],
+      styleSrcElem: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', "'unsafe-inline'"],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
       scriptSrc: ["'self'", "'unsafe-inline'"]
@@ -841,7 +842,7 @@ app.post('/admin/produtos', upload.fields([
     const extraImages = (req.files.extraImages || []).map(file => file.path);
 
     // Trata imagem principal (se não enviada, fica null) → também URL do Cloudinary
-    const image = req.files.image ? req.files.image[0].path : null;
+    const image = req.files?.image?.[0]?.path ?? undefined;
 
     // Preço original (obrigatório)
     const originalPrice = parseFloat(req.body.originalPrice);
