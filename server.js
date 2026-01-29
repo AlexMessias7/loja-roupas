@@ -28,7 +28,6 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch(err => console.error("❌ Erro de conexão:", err));
 
 // ---- Configuração de Middleware ----
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -110,9 +109,6 @@ const clienteSchema = new mongoose.Schema({
   criadoEm: { type: Date, default: Date.now }
 });
 
-const Cliente = mongoose.model('Cliente', clienteSchema);
-module.exports = Cliente;
-
 // ---- Esquema do Carrinho ----
 const cartSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
@@ -176,8 +172,10 @@ const productSchema = new mongoose.Schema({
     image: String,
     category: String,
     stock: { type: Number, required: true },
-    stockMax: { type: Number, required: true },   // novo campo
-    stockMin: { type: Number, required: true },   // novo campo
+    stockMax: { type: Number, required: true },
+    stockMin: { type: Number, required: true },
+    maxInstallments: { type: Number, required: true },
+    gender: { type: String, enum: ['Masculino', 'Feminino', 'Unissex'], required: true },
     isFeatured: { type: Boolean, default: false },
     isOnSale: { type: Boolean, default: false },
     comments: [
