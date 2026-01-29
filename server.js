@@ -977,20 +977,33 @@ app.put('/admin/produtos/:id', upload.fields([
   { name: 'extraImages', maxCount: 3 }
 ]), async (req, res) => {
   try {
+    // Logs para depuração
     console.log('Arquivos recebidos:', req.files);
+    console.log('Dados recebidos:', req.body);
 
-    const extraImages = Array.isArray(req.files.extraImages)
+    // Trata imagens extras (se enviadas)
+    const extraImages = Array.isArray(req.files?.extraImages)
       ? req.files.extraImages.map(file => file.path)
       : [];
 
+    // Trata imagem principal (se enviada)
+    const image = Array.isArray(req.files?.image) && req.files.image.length > 0
+      ? req.files.image[0].path
+      : null;
+
+    // Preço original (obrigatório)
     const originalPrice = parseFloat(req.body.originalPrice);
+
+    // Se não houver preço com desconto, assume o original
     const discountedPrice = req.body.discountedPrice
       ? parseFloat(req.body.discountedPrice)
       : originalPrice;
 
+    // Parcelas (se não informado, assume 1)
     const maxInstallments = parseInt(req.body.maxInstallments) || 1;
     const installmentValue = (discountedPrice / maxInstallments).toFixed(2);
 
+    // Monta objeto atualizado
     const updatedProduct = {
       name: req.body.name,
       originalPrice,
@@ -1008,21 +1021,25 @@ app.put('/admin/produtos/:id', upload.fields([
       gender: req.body.gender
     };
 
-    if (Array.isArray(req.files.image) && req.files.image.length > 0) {
-      updatedProduct.image = req.files.image[0].path;
+    // Atualiza imagem principal se enviada
+    if (image) {
+      updatedProduct.image = image;
     }
 
+    // Atualiza imagens extras se enviadas
     if (extraImages.length > 0) {
       updatedProduct.extraImages = extraImages;
     }
 
     console.log('Produto atualizado:', updatedProduct);
 
+    // Atualiza no banco
     await Product.findByIdAndUpdate(req.params.id, updatedProduct);
+
     res.redirect('/admin/produtos');
   } catch (err) {
-    console.error('Erro ao atualizar produto:', err);
-    res.status(500).send('Erro ao atualizar produto');
+    console.error('Erro ao atualizar produto:', err.message);
+    res.status(500).send('Erro ao atualizar produto: ' + err.message);
   }
 });
 
