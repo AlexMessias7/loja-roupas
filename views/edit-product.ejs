@@ -57,6 +57,7 @@
                             <label style="margin-left:10px;">
                                 <input type="checkbox" name="deleteMainImage"> Excluir imagem principal
                             </label>
+                            <small style="display:block; color:#666;">Se marcar, a imagem será removida mesmo que você não envie uma nova.</small>
                         </div>
                     <% } %>
                 </div>
@@ -75,6 +76,7 @@
                                     </label>
                                 </div>
                             <% }) %>
+                            <small style="display:block; color:#666;">Se marcar, a imagem será removida da lista.</small>
                         </div>
                     <% } %>
                 </div>                
@@ -145,7 +147,7 @@
       document.querySelectorAll('.fallback-image').forEach(img => {
         img.addEventListener('error', () => {
           console.warn('Imagem não carregada, aplicando fallback:', img.src);
-          img.src = 'https://res.cloudinary.com/dr5e0uynoimage/upload/v1234567890/loja-roupas/default.jpg';
+          img.src = 'https://res.cloudinary.com/dr5e0uyno/image/upload/v1234567890/loja-roupas/default.jpg';
         });
       });
 

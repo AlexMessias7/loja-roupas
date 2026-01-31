@@ -29,26 +29,37 @@
         <div class="container">
             <h2>Adicionar Novo Produto</h2>
             <form action="/admin/produtos" method="post" enctype="multipart/form-data">
+                
+                <!-- Nome -->
                 <div class="form-group">
                     <label for="name">Nome do Produto:</label>
                     <input type="text" id="name" name="name" required>
                 </div>
+
+                <!-- Preços -->
                 <div class="form-group">
                     <label for="originalPrice">Preço Original:</label>
                     <input type="number" id="originalPrice" name="originalPrice" step="0.01" required>
                 </div>
+
                 <div class="form-group">
                     <label for="discountedPrice">Preço com Desconto:</label>
                     <input type="number" id="discountedPrice" name="discountedPrice" step="0.01">
                 </div>
+
+                <!-- Imagem principal -->
                 <div class="form-group">
                     <label for="image">Imagem Principal:</label>
                     <input type="file" id="image" name="image" accept="image/*" required>
                 </div>
+
+                <!-- Imagens adicionais -->
                 <div class="form-group">
                     <label for="extraImages">Imagens Adicionais do Produto:</label>
-                    <input type="file" id="extraImages" name="extraImages[]" accept="image/*" multiple>
+                    <input type="file" id="extraImages" name="extraImages" accept="image/*" multiple>
                 </div>                              
+
+                <!-- Gênero -->
                 <div class="form-group">
                     <label for="gender">Gênero:</label>
                     <select id="gender" name="gender" required>
@@ -57,6 +68,8 @@
                         <option value="Unissex">Unissex</option>
                     </select>
                 </div>
+
+                <!-- Tamanhos -->
                 <div class="form-group">
                     <label for="sizes">Tamanhos:</label>
                     <div>
@@ -66,11 +79,14 @@
                         <label><input type="checkbox" name="sizes" value="GG"> GG</label>
                     </div>
                 </div>
+
+                <!-- Parcelas -->
                 <div class="form-group">
                     <label for="maxInstallments">Número Máximo de Parcelas:</label>
                     <input type="number" id="maxInstallments" name="maxInstallments" required>
                 </div>
                 
+                <!-- Estoque -->
                 <div class="form-group">
                     <label for="stockMax">Estoque Máximo:</label>
                     <input type="number" id="stockMax" name="stockMax" required>
@@ -80,14 +96,18 @@
                     <label for="stockMin">Estoque Mínimo:</label>
                     <input type="number" id="stockMin" name="stockMin" required>
                 </div>
+
+                <!-- Flags -->
                 <div class="form-group">
                     <label for="isFeatured">Destaque:</label>
                     <input type="checkbox" id="isFeatured" name="isFeatured">
                 </div>
+
                 <div class="form-group">
                     <label for="isOnSale">Promoção:</label>
                     <input type="checkbox" id="isOnSale" name="isOnSale">
                 </div>
+
                 <button type="submit">Adicionar Produto</button>
             </form>
         </div>

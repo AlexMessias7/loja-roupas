@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
+const cloudinary = require('cloudinary').v2;
 require('dotenv').config();
+
+// Configuração do Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // Modelo de Produto
 const Product = mongoose.model('Product', new mongoose.Schema({
@@ -8,24 +16,38 @@ const Product = mongoose.model('Product', new mongoose.Schema({
   extraImages: [String]
 }));
 
-// Conexão
+// Conexão com MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log("✅ Conectado ao MongoDB Atlas");
 
-    // Busca produtos com imagens locais quebradas
+    // Upload da imagem padrão para Cloudinary (uma vez só)
+    const defaultUpload = await cloudinary.uploader.upload(
+      'public/images/default.jpg', // caminho local da imagem padrão
+      {
+        folder: 'loja-roupas',
+        format: 'jpg' // força o formato JPG
+      }
+    );
+    const defaultUrl = defaultUpload.secure_url;
+    console.log("✅ Imagem padrão enviada para Cloudinary:", defaultUrl);
+
+    // Busca produtos com imagem principal quebrada
     const produtos = await Product.find({ image: { $regex: '^/images/' } });
 
     for (const produto of produtos) {
-      // Substitui por uma imagem padrão do Cloudinary
-      produto.image = 'https://res.cloudinary.com/SEU_CLOUD_NAME/image/upload/v1234567890/loja-roupas/default.jpg';
+      // Substitui imagem principal quebrada
+      if (produto.image && produto.image.startsWith('/images/')) {
+        produto.image = defaultUrl;
+      }
 
-      // Se tiver extras locais, também substitui
-      produto.extraImages = produto.extraImages.map(img =>
-        img.startsWith('/images/')
-          ? 'https://res.cloudinary.com/dr5e0uyno/image/upload/v1234567890/loja-roupas/default.jpg'
-          : img
-      );
+      // Substitui imagens extras quebradas
+      produto.extraImages = await Promise.all(produto.extraImages.map(async img => {
+        if (img.startsWith('/images/')) {
+          return defaultUrl;
+        }
+        return img;
+      }));
 
       await produto.save();
       console.log(`🔧 Produto atualizado: ${produto.name}`);

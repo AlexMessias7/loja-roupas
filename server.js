@@ -997,7 +997,7 @@ app.put('/admin/produtos/:id', upload.fields([
     // Trata imagem principal
     let image = null;
     if (req.files && req.files.image && Array.isArray(req.files.image) && req.files.image.length > 0) {
-      image = req.files.image[0].path;
+      image = req.files.image[0].path; // confirme se é path ou url
     }
 
     // Trata imagens extras
@@ -1033,7 +1033,6 @@ app.put('/admin/produtos/:id', upload.fields([
       discountedPrice,
       description: req.body.description || '',
       category: req.body.category || '',
-      stock: req.body.stock ? parseInt(req.body.stock) : 0,
       stockMax: req.body.stockMax ? parseInt(req.body.stockMax) : 0,
       stockMin: req.body.stockMin ? parseInt(req.body.stockMin) : 0,
       isFeatured: !!req.body.isFeatured,
@@ -1058,13 +1057,18 @@ app.put('/admin/produtos/:id', upload.fields([
       updatedProduct.image = product.image; // mantém a existente
     }
 
-    // Excluir imagens adicionais se checkbox marcado
+    // Excluir imagens adicionais + adicionar novas
     if (req.body.deleteExtraImages) {
       const toDelete = Array.isArray(req.body.deleteExtraImages)
         ? req.body.deleteExtraImages
         : [req.body.deleteExtraImages];
 
       updatedProduct.extraImages = product.extraImages.filter(img => !toDelete.includes(img));
+
+      // Se enviou novas imagens, adiciona junto
+      if (extraImages.length > 0) {
+        updatedProduct.extraImages = [...updatedProduct.extraImages, ...extraImages];
+      }
     } else if (extraImages.length > 0) {
       updatedProduct.extraImages = extraImages;
     } else {
