@@ -39,12 +39,17 @@ app.set('view engine', 'ejs');
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'", 'https://www.gstatic.com'],
-      styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', "'unsafe-inline'"],
-      styleSrcElem: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', "'unsafe-inline'"],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
-      scriptSrc: ["'self'", "'unsafe-inline'"]
+      defaultSrc: ["*"],
+      scriptSrc: ["*"],
+      styleSrc: ["*"],
+      imgSrc: ["* data:"],
+      fontSrc: ["*"],
+      connectSrc: ["*"],
+      mediaSrc: ["*"],
+      objectSrc: ["*"],
+      frameSrc: ["*"],
+      scriptSrcAttr: ["*"],
+      styleSrcAttr: ["*"]
     }
   }
 }));

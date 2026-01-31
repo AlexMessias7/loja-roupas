@@ -52,7 +52,12 @@
                     <label for="image">Imagem Principal:</label>
                     <input type="file" id="image" name="image" accept="image/*">
                     <% if (product.image) { %>
-                        <img src="<%= product.image %>" alt="<%= product.name %>" class="fallback-image current-image" style="width:80px; margin-top:10px;">
+                        <div style="margin-top:10px;">
+                            <img src="<%= product.image %>" alt="<%= product.name %>" class="fallback-image current-image" style="width:80px;">
+                            <label style="margin-left:10px;">
+                                <input type="checkbox" name="deleteMainImage"> Excluir imagem principal
+                            </label>
+                        </div>
                     <% } %>
                 </div>
 
@@ -61,9 +66,14 @@
                     <label for="extraImages">Atualizar Imagens Adicionais:</label>
                     <input type="file" id="extraImages" name="extraImages" accept="image/*" multiple>
                     <% if (product.extraImages && product.extraImages.length > 0) { %>
-                        <div class="imagem-existente">
+                        <div class="imagem-existente" style="margin-top:10px;">
                             <% product.extraImages.forEach(function(image) { %>
-                                <img src="<%= image %>" alt="Imagem Adicional" class="fallback-image" width="80">
+                                <div style="display:flex; align-items:center; margin-bottom:5px;">
+                                    <img src="<%= image %>" alt="Imagem Adicional" class="fallback-image" width="80">
+                                    <label style="margin-left:10px;">
+                                        <input type="checkbox" name="deleteExtraImages" value="<%= image %>"> Excluir esta imagem
+                                    </label>
+                                </div>
                             <% }) %>
                         </div>
                     <% } %>
