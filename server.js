@@ -165,43 +165,45 @@ const pedidoSchema = new mongoose.Schema({
 const Pedido = mongoose.model('Pedido', pedidoSchema);
 
 // ---- Esquema do Produto ----
+// ---- Esquema do Produto ----
 const productSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    originalPrice: { type: Number, required: true },
-    discountedPrice: { type: Number },
-    description: String,
-    image: String,
-    category: String,
-    stock: { type: Number, required: true },
-    stockMax: { type: Number, required: true },
-    stockMin: { type: Number, required: true },
-    maxInstallments: { type: Number, required: true },
-    gender: { type: String, enum: ['Masculino', 'Feminino', 'Unissex'], required: true },
-    isFeatured: { type: Boolean, default: false },
-    isOnSale: { type: Boolean, default: false },
-    comments: [
-        {
-            user: String,
-            text: String,
-            rating: Number,
-        },
-    ],
-    ratingAverage: { type: Number, default: 0 },
-    ratingCount: { type: Number, default: 0 },
-    recommendationPercentage: { type: Number, default: 0 },
-    maxInstallments: { type: Number, required: true },
-    installmentValue: Number,
-    gender: { type: String, enum: ['Masculino', 'Feminino', 'Unissex'], required: true },
-    sizes: {
-        type: [String],
-        enum: ['P', 'M', 'G', 'GG'], // Apenas permite tamanhos válidos
-        default: [],
+  name: { type: String, required: true },
+  originalPrice: { type: Number, required: true },
+  discountedPrice: { type: Number },
+  description: { type: String, default: '' },
+  image: { type: String, default: null }, // URL do Cloudinary ou null
+  category: { type: String, default: '' },
+  stock: { type: Number, required: true },
+  stockMax: { type: Number, required: true },
+  stockMin: { type: Number, required: true },
+  maxInstallments: { type: Number, required: true },
+  installmentValue: { type: Number, default: 0 },
+  gender: { type: String, enum: ['Masculino', 'Feminino', 'Unissex'], required: true },
+  isFeatured: { type: Boolean, default: false },
+  isOnSale: { type: Boolean, default: false },
+  sizes: {
+    type: [String],
+    enum: ['P', 'M', 'G', 'GG'], // Apenas permite tamanhos válidos
+    default: [],
+  },
+  extraImages: { type: [String], default: [] }, // URLs do Cloudinary
+
+  // Campos de avaliação
+  comments: [
+    {
+      user: String,
+      text: String,
+      rating: Number,
     },
-    extraImages: [String],
+  ],
+  ratingAverage: { type: Number, default: 0 },
+  ratingCount: { type: Number, default: 0 },
+  recommendationPercentage: { type: Number, default: 0 },
 });
 
 const Product = mongoose.model('Product', productSchema);
 
+// ---- Esquema de Entrada ----
 const entradaSchema = new mongoose.Schema({
   codigo: String, // ex: ENTRADA-20260120-001
   pedidoNumero: String,
@@ -212,12 +214,14 @@ const entradaSchema = new mongoose.Schema({
       quantidade: Number,
       preco: Number,
       desconto: Number,
-      total: Number
-    }
-  ]
+      total: Number,
+    },
+  ],
 });
 
 const Entrada = mongoose.model('Entrada', entradaSchema);
+
+module.exports = { Product, Entrada };
 
 // rota de cadastro
 app.post('/cadastro', async (req, res) => {
@@ -833,25 +837,28 @@ app.get('/admin/produtos', async (req, res) => {
     }
 });
 
+// Criar novo produto
 app.post('/admin/produtos', upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'extraImages', maxCount: 3 }
 ]), async (req, res) => {
   try {
-    // Trata imagens extras (se existirem) → agora vem com URL do Cloudinary
-    let extraImages = [];
-      if (req.files && req.files.extraImages && req.files.extraImages.length > 0) {
-        extraImages = req.files.extraImages.map(file => file.path);
-      }
+    // Logs para depuração
+    console.log('--- INÍCIO DA CRIAÇÃO DO PRODUTO ---');
+    console.log('Arquivos recebidos:', req.files);
+    console.log('Dados recebidos:', req.body);
 
-    // Trata imagem principal (se não enviada, fica null) → também URL do Cloudinary
-    let image = null;
-      if (req.files && req.files.image && req.files.image.length > 0) {
-        image = req.files.image[0].path;
-      }
+    // Trata imagens extras (Cloudinary retorna URL em file.path)
+    const extraImages = req.files?.extraImages?.map(file => file.path) || [];
+
+    // Trata imagem principal (se não enviada, fica null)
+    const image = req.files?.image?.[0]?.path || null;
 
     // Preço original (obrigatório)
     const originalPrice = parseFloat(req.body.originalPrice);
+    if (isNaN(originalPrice)) {
+      throw new Error('Preço original inválido');
+    }
 
     // Se não houver preço com desconto, assume o original
     const discountedPrice = req.body.discountedPrice
@@ -862,35 +869,51 @@ app.post('/admin/produtos', upload.fields([
     const maxInstallments = parseInt(req.body.maxInstallments) || 1;
     const installmentValue = (discountedPrice / maxInstallments).toFixed(2);
 
+    // Trata tamanhos
+    const sizes = Array.isArray(req.body.sizes)
+      ? req.body.sizes
+      : req.body.sizes
+        ? [req.body.sizes]
+        : [];
+
     // Cria o produto
     const product = new Product({
       name: req.body.name,
       originalPrice,
       discountedPrice,
-      description: req.body.description,
-      image,              // agora é a URL do Cloudinary
+      description: req.body.description || '',
+      image,              // URL do Cloudinary
       extraImages,        // lista de URLs do Cloudinary
-      category: req.body.category,
-      stock: 0,
+      category: req.body.category || '',
       stockMax: req.body.stockMax ? parseInt(req.body.stockMax) : 0,
       stockMin: req.body.stockMin ? parseInt(req.body.stockMin) : 0,
       isFeatured: !!req.body.isFeatured,
       isOnSale: !!req.body.isOnSale,
       maxInstallments,
       installmentValue,
-      sizes: Array.isArray(req.body.sizes) ? req.body.sizes : [req.body.sizes],
+      sizes,
       gender: req.body.gender,
       discountPercentage: ((originalPrice - discountedPrice) / originalPrice) * 100
     });
 
+    // Validação de campos obrigatórios
+    if (!product.name || !product.originalPrice || !product.gender) {
+      throw new Error('Campos obrigatórios ausentes');
+    }
+
     // Salva no banco
     await product.save();
 
+    console.log('--- PRODUTO CRIADO COM SUCESSO ---');
     // Redireciona para listagem
     res.redirect('/admin/produtos');
   } catch (err) {
-    console.error('Erro ao salvar produto:', err);
-    res.status(500).send('Erro ao salvar produto');
+    console.error('--- ERRO AO SALVAR PRODUTO ---');
+    console.error('Mensagem:', err.message);
+    console.error('Stack:', err.stack);
+    console.error('Files:', req.files);
+    console.error('Body:', req.body);
+    res.status(500).send('Erro ao salvar produto: ' + err.message);
   }
 });
 
@@ -994,17 +1017,11 @@ app.put('/admin/produtos/:id', upload.fields([
       throw new Error('Produto não encontrado para atualização');
     }
 
-    // Trata imagem principal
-    let image = null;
-    if (req.files && req.files.image && Array.isArray(req.files.image) && req.files.image.length > 0) {
-      image = req.files.image[0].path; // confirme se é path ou url
-    }
+    // Trata imagem principal (Cloudinary já retorna URL em file.path)
+    const image = req.files?.image?.[0]?.path || null;
 
     // Trata imagens extras
-    let extraImages = [];
-    if (req.files && req.files.extraImages && Array.isArray(req.files.extraImages)) {
-      extraImages = req.files.extraImages.map(file => file.path);
-    }
+    const extraImages = req.files?.extraImages?.map(file => file.path) || [];
 
     // Validação de preço
     const originalPrice = parseFloat(req.body.originalPrice);
