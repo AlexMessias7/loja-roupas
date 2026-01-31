@@ -39,6 +39,7 @@ app.set('view engine', 'ejs');
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
+      defaultSrc: ["'self'", 'https://www.gstatic.com'],
       styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://www.gstatic.com', "'unsafe-inline'"],
       styleSrcElem: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://www.gstatic.com', "'unsafe-inline'"],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
