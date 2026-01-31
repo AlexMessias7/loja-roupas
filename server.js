@@ -39,17 +39,12 @@ app.set('view engine', 'ejs');
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["*"],
-      scriptSrc: ["*"],
-      styleSrc: ["*"],
-      imgSrc: ["* data:"],
-      fontSrc: ["*"],
-      connectSrc: ["*"],
-      mediaSrc: ["*"],
-      objectSrc: ["*"],
-      frameSrc: ["*"],
-      scriptSrcAttr: ["*"],
-      styleSrcAttr: ["*"]
+      defaultSrc: ["'self'", 'https://www.gstatic.com'],
+      styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', "'unsafe-inline'"],
+      styleSrcElem: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', "'unsafe-inline'"],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
+      scriptSrc: ["'self'", "'unsafe-inline'"]
     }
   }
 }));
@@ -993,6 +988,12 @@ app.put('/admin/produtos/:id', upload.fields([
     console.log('Arquivos recebidos:', req.files);
     console.log('Dados recebidos:', req.body);
 
+    // Busca produto atual para poder manipular imagens existentes
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      throw new Error('Produto não encontrado para atualização');
+    }
+
     // Trata imagem principal
     let image = null;
     if (req.files && req.files.image && Array.isArray(req.files.image) && req.files.image.length > 0) {
@@ -1048,14 +1049,26 @@ app.put('/admin/produtos/:id', upload.fields([
       throw new Error('Campos obrigatórios ausentes');
     }
 
-    // Atualiza imagem principal se enviada
-    if (image) {
+    // Excluir imagem principal se checkbox marcado
+    if (req.body.deleteMainImage === 'on') {
+      updatedProduct.image = null;
+    } else if (image) {
       updatedProduct.image = image;
+    } else {
+      updatedProduct.image = product.image; // mantém a existente
     }
 
-    // Atualiza imagens extras se enviadas
-    if (extraImages.length > 0) {
+    // Excluir imagens adicionais se checkbox marcado
+    if (req.body.deleteExtraImages) {
+      const toDelete = Array.isArray(req.body.deleteExtraImages)
+        ? req.body.deleteExtraImages
+        : [req.body.deleteExtraImages];
+
+      updatedProduct.extraImages = product.extraImages.filter(img => !toDelete.includes(img));
+    } else if (extraImages.length > 0) {
       updatedProduct.extraImages = extraImages;
+    } else {
+      updatedProduct.extraImages = product.extraImages; // mantém as existentes
     }
 
     console.log('Produto atualizado:', updatedProduct);
