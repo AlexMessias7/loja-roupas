@@ -59,7 +59,7 @@
                 <!-- Imagens adicionais -->
                 <div class="form-group">
                     <label for="extraImages">Atualizar Imagens Adicionais:</label>
-                    <input type="file" name="extraImages[]" accept="image/*" multiple>
+                    <input type="file" id="extraImages" name="extraImages" accept="image/*" multiple>
                     <% if (product.extraImages && product.extraImages.length > 0) { %>
                         <div class="imagem-existente">
                             <% product.extraImages.forEach(function(image) { %>
@@ -130,12 +130,22 @@
         </div>
     </footer>
 
-    <!-- Fallback de imagem via JavaScript -->
+    <!-- Fallback de imagem com log -->
     <script>
       document.querySelectorAll('.fallback-image').forEach(img => {
         img.addEventListener('error', () => {
+          console.warn('Imagem não carregada, aplicando fallback:', img.src);
           img.src = 'https://res.cloudinary.com/dr5e0uynoimage/upload/v1234567890/loja-roupas/default.jpg';
         });
+      });
+
+      // Log dos arquivos selecionados antes de enviar
+      const form = document.querySelector('form');
+      form.addEventListener('submit', () => {
+        const mainImage = document.getElementById('image').files[0];
+        const extraImages = document.getElementById('extraImages').files;
+        console.log('Imagem principal selecionada:', mainImage);
+        console.log('Imagens adicionais selecionadas:', extraImages);
       });
     </script>
 </body>

@@ -977,39 +977,43 @@ app.get('/pedido-confirmado', (req, res) => {
   res.render('pedido-confirmado', { numero });
 });
 
+// Atualizar produto
 app.put('/admin/produtos/:id', upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'extraImages', maxCount: 5 }
 ]), async (req, res) => {
   try {
     // Logs para depuração
+    console.log('--- INÍCIO DA ATUALIZAÇÃO DO PRODUTO ---');
     console.log('Arquivos recebidos:', req.files);
     console.log('Dados recebidos:', req.body);
 
-    // Trata imagens extras (se enviadas)
-    const extraImages = Array.isArray(req.files?.extraImages)
-      ? req.files.extraImages.map(file => file.path)
-      : [];
+    // Trata imagem principal
+    let image = null;
+    if (req.files && req.files.image && Array.isArray(req.files.image) && req.files.image.length > 0) {
+      image = req.files.image[0].path;
+    }
 
-    // Trata imagem principal (se enviada)
-    const image = req.files?.image?.[0]?.path || null;
+    // Trata imagens extras
+    let extraImages = [];
+    if (req.files && req.files.extraImages && Array.isArray(req.files.extraImages)) {
+      extraImages = req.files.extraImages.map(file => file.path);
+    }
 
-    // Preço original (obrigatório)
+    // Validação de preço
     const originalPrice = parseFloat(req.body.originalPrice);
     if (isNaN(originalPrice)) {
       throw new Error('Preço original inválido');
     }
 
-    // Se não houver preço com desconto, assume o original
     const discountedPrice = req.body.discountedPrice
       ? parseFloat(req.body.discountedPrice)
       : originalPrice;
 
-    // Parcelas (se não informado, assume 1)
     const maxInstallments = parseInt(req.body.maxInstallments) || 1;
     const installmentValue = (discountedPrice / maxInstallments).toFixed(2);
 
-    // Trata tamanhos (checkboxes podem vir como string ou array)
+    // Trata tamanhos
     const sizes = Array.isArray(req.body.sizes)
       ? req.body.sizes
       : req.body.sizes
@@ -1034,6 +1038,11 @@ app.put('/admin/produtos/:id', upload.fields([
       gender: req.body.gender
     };
 
+    // Validação de campos obrigatórios
+    if (!updatedProduct.name || !updatedProduct.originalPrice || !updatedProduct.gender) {
+      throw new Error('Campos obrigatórios ausentes');
+    }
+
     // Atualiza imagem principal se enviada
     if (image) {
       updatedProduct.image = image;
@@ -1047,16 +1056,28 @@ app.put('/admin/produtos/:id', upload.fields([
     console.log('Produto atualizado:', updatedProduct);
 
     // Atualiza no banco
-    await Product.findByIdAndUpdate(req.params.id, updatedProduct, { new: true });
+    const result = await Product.findByIdAndUpdate(req.params.id, updatedProduct, {
+      new: true,
+      runValidators: true
+    });
 
+    if (!result) {
+      throw new Error('Produto não encontrado para atualização');
+    }
+
+    console.log('--- PRODUTO ATUALIZADO COM SUCESSO ---');
     res.redirect('/admin/produtos');
   } catch (err) {
-    console.error('Erro ao atualizar produto:', err.message, err.stack);
+    console.error('--- ERRO AO ATUALIZAR PRODUTO ---');
+    console.error('Mensagem:', err.message);
+    console.error('Stack:', err.stack);
+    console.error('Files:', req.files);
+    console.error('Body:', req.body);
     res.status(500).send('Erro ao atualizar produto: ' + err.message);
   }
 });
 
-// Rota para abrir o formulário de edição (mais explícita)
+// Rota para abrir o formulário de edição
 app.get('/admin/produtos/:id/editar', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -1070,7 +1091,7 @@ app.get('/admin/produtos/:id/editar', async (req, res) => {
   }
 });
 
-// Se você quiser manter a rota sem "/editar", pode deixar como redirecionamento
+// Redirecionamento para rota de edição
 app.get('/admin/produtos/:id', (req, res) => {
   res.redirect(`/admin/produtos/${req.params.id}/editar`);
 });
