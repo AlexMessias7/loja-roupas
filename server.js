@@ -1,6 +1,6 @@
 //git add .
 //git commit -m "ajustes de responsividade no CSS"
-//git push origin main      QUALQUER ATUALIZAÇÃO DO CSS
+//git push origin main
 
 require('dotenv').config();
 const express = require('express');
@@ -1022,7 +1022,9 @@ app.put('/admin/produtos/:id', upload.fields([
     const image = req.files?.image?.[0]?.path || null;
 
     // Trata imagens extras
-    const extraImages = req.files?.extraImages?.map(file => file.path) || [];
+   const extraImages = Array.isArray(req.files?.extraImages)
+      ? req.files.extraImages.map(file => file.path)
+      : [];
 
     // Validação de preço
     const originalPrice = parseFloat(req.body.originalPrice);
