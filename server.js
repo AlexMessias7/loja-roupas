@@ -1008,9 +1008,9 @@ app.put('/admin/produtos/:id', upload.fields([
 ]), async (req, res) => {
   try {
     // Logs para depuração
-    console.log('--- INÍCIO DA ATUALIZAÇÃO DO PRODUTO ---');
-    console.log('Arquivos recebidos:', req.files);
-    console.log('Dados recebidos:', req.body);
+    console.log('Atualizando produto com:', updatedProduct);
+    console.log('Imagem principal:', req.files?.image?.[0]);
+    console.log('Imagens extras:', req.files?.extraImages);
 
     // Busca produto atual para poder manipular imagens existentes
     const product = await Product.findById(req.params.id);
@@ -1117,6 +1117,15 @@ app.put('/admin/produtos/:id', upload.fields([
     console.error('Body:', req.body);
     res.status(500).send('Erro ao atualizar produto: ' + err.message);
   }
+});
+
+app.post('/debug-upload', upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'extraImages', maxCount: 5 }
+]), (req, res) => {
+  console.log('BODY:', req.body);
+  console.log('FILES:', req.files);
+  res.send('Upload recebido com sucesso');
 });
 
 // Rota para abrir o formulário de edição
