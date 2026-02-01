@@ -165,7 +165,6 @@ const pedidoSchema = new mongoose.Schema({
 const Pedido = mongoose.model('Pedido', pedidoSchema);
 
 // ---- Esquema do Produto ----
-// ---- Esquema do Produto ----
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   originalPrice: { type: Number, required: true },
@@ -173,7 +172,7 @@ const productSchema = new mongoose.Schema({
   description: { type: String, default: '' },
   image: { type: String, default: null }, // URL do Cloudinary ou null
   category: { type: String, default: '' },
-  stock: { type: Number, required: true },
+  stock: { type: Number, default: 0 },
   stockMax: { type: Number, required: true },
   stockMin: { type: Number, required: true },
   maxInstallments: { type: Number, required: true },
@@ -849,7 +848,9 @@ app.post('/admin/produtos', upload.fields([
     console.log('Dados recebidos:', req.body);
 
     // Trata imagens extras (Cloudinary retorna URL em file.path)
-    const extraImages = req.files?.extraImages?.map(file => file.path) || [];
+    const extraImages = Array.isArray(req.files?.extraImages)
+      ? req.files.extraImages.map(file => file.path)
+      : [];
 
     // Trata imagem principal (se não enviada, fica null)
     const image = req.files?.image?.[0]?.path || null;
