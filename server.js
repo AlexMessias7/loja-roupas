@@ -33,6 +33,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
+app.use((err, req, res, next) => {
+  console.error('Erro global:', err.message);
+  console.error('Stack:', err.stack);
+  res.status(500).send('Erro interno: ' + err.message);
+});
 
 // ---- Configuração da Política de Segurança (CSP) ----
 // Resolve bloqueios de recursos externos no navegador
