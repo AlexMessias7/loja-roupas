@@ -161,9 +161,7 @@ const pedidoSchema = new mongoose.Schema({
 
 const Pedido = mongoose.model('Pedido', pedidoSchema);
 
-// ---- Esquema do Produto ----
-const mongoose = require('mongoose');
-
+// ---- Esquema do Produto ---
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   originalPrice: { type: Number, required: true },
