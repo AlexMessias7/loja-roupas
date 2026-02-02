@@ -236,7 +236,7 @@ const entradaSchema = new mongoose.Schema({
 
 const Entrada = mongoose.model('Entrada', entradaSchema);
 
-module.exports = { Product, Entrada };
+module.exports = { Product, Entrada, upload };
 
 // rota de cadastro
 app.post('/cadastro', async (req, res) => {
@@ -861,25 +861,41 @@ app.post('/admin/produtos', upload.fields([
     console.log('--- INÍCIO DA CRIAÇÃO DO PRODUTO ---');
     console.log('Arquivos recebidos:', req.files);
     console.log('Dados recebidos:', req.body);
-    console.log('Imagem recebida:', req.files?.image?.[0]);
+    console.log('Imagem principal recebida:', req.files?.image?.[0]);
 
     // --- Upload da imagem principal ---
     let imageUrl = null;
     if (req.files?.image?.[0]) {
-      const result = await cloudinary.uploader.upload(req.files.image[0].path, {
-        folder: 'loja-roupas'
-      });
-      imageUrl = result.secure_url;
+      const file = req.files.image[0];
+      try {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: 'loja-roupas'
+        });
+        imageUrl = result.secure_url;
+        console.log('Imagem principal enviada com sucesso:', imageUrl);
+        fs.unlinkSync(file.path); // apaga temporário
+      } catch (uploadErr) {
+        console.error('Erro ao enviar imagem principal:', uploadErr.message);
+        throw new Error('Falha no upload da imagem principal');
+      }
     }
 
     // --- Upload das imagens extras ---
     let extraImagesUrls = [];
     if (Array.isArray(req.files?.extraImages)) {
       for (const file of req.files.extraImages) {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: 'loja-roupas'
-        });
-        extraImagesUrls.push(result.secure_url);
+        console.log('Imagem extra recebida:', file);
+        try {
+          const result = await cloudinary.uploader.upload(file.path, {
+            folder: 'loja-roupas'
+          });
+          extraImagesUrls.push(result.secure_url);
+          console.log('Imagem extra enviada com sucesso:', result.secure_url);
+          fs.unlinkSync(file.path); // apaga temporário
+        } catch (uploadErr) {
+          console.error('Erro ao enviar imagem extra:', uploadErr.message);
+          throw new Error('Falha no upload de imagem extra');
+        }
       }
     }
 
@@ -941,7 +957,7 @@ app.post('/admin/produtos', upload.fields([
     console.error('Stack:', err.stack);
     console.error('Files:', req.files);
     console.error('Body:', req.body);
-    res.status(500).send('Erro ao salvar produto: ' + err.message);
+    res.status(500).send('Erro ao salvar produto: ' + (err.message || 'Erro desconhecido'));
   }
 });
 
@@ -1028,6 +1044,8 @@ app.get('/pedido-confirmado', (req, res) => {
   res.render('pedido-confirmado', { numero });
 });
 
+const fs = require('fs'); // no topo do arquivo, se ainda não tiver
+
 app.put('/admin/produtos/:id', upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'extraImages', maxCount: 5 }
@@ -1038,7 +1056,6 @@ app.put('/admin/produtos/:id', upload.fields([
     console.log('Dados recebidos:', req.body);
     console.log('Arquivos recebidos:', req.files);
 
-    // Busca produto atual
     const product = await Product.findById(req.params.id);
     if (!product) {
       throw new Error('Produto não encontrado para atualização');
@@ -1049,13 +1066,15 @@ app.put('/admin/produtos/:id', upload.fields([
     if (req.body.deleteMainImage === 'on') {
       imageUrl = null;
     } else if (req.files?.image?.[0]) {
-      console.log('Imagem principal recebida:', req.files.image[0]);
+      const file = req.files.image[0];
+      console.log('Imagem principal recebida:', file);
       try {
-        const result = await cloudinary.uploader.upload(req.files.image[0].path, {
+        const result = await cloudinary.uploader.upload(file.path, {
           folder: 'loja-roupas'
         });
         imageUrl = result.secure_url;
         console.log('Imagem principal enviada com sucesso:', imageUrl);
+        fs.unlinkSync(file.path); // apaga temporário
       } catch (uploadErr) {
         console.error('Erro ao enviar imagem principal:', uploadErr.message);
         throw new Error('Falha no upload da imagem principal');
@@ -1079,6 +1098,7 @@ app.put('/admin/produtos/:id', upload.fields([
           });
           extraImagesUrls.push(result.secure_url);
           console.log('Imagem extra enviada com sucesso:', result.secure_url);
+          fs.unlinkSync(file.path); // apaga temporário
         } catch (uploadErr) {
           console.error('Erro ao enviar imagem extra:', uploadErr.message);
           throw new Error('Falha no upload de imagem extra');
