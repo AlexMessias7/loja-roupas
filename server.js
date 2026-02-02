@@ -128,7 +128,6 @@ const Cart = mongoose.model('Cart', cartSchema);
 
 // ---- Configuração do Multer + Cloudinary ----
 const cloudinary = require('cloudinary').v2;
-const multer = require('multer');
 
 // Configuração do Cloudinary
 cloudinary.config({
