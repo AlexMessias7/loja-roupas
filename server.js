@@ -252,7 +252,7 @@ const entradaSchema = new mongoose.Schema({
 
 const Entrada = mongoose.model('Entrada', entradaSchema);
 
-module.exports = { Product, Entrada, upload, cliente };
+module.exports = { Product, Entrada, upload};
 
 // rota de cadastro
 app.post('/cadastro', async (req, res) => {
