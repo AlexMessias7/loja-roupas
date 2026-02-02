@@ -19,18 +19,26 @@ function inicializarFavoritos() {
       // Proteção: só permite se o usuário estiver logado
       if (!window.clienteLogado) {
         showAlert("Você precisa estar logado para favoritar produtos.", "error");
-        window.location.href = "/login"; // opcional: redireciona para login
+        window.location.href = "/login-cliente"; // corrigido para login do cliente
         return;
       }
 
       isFavorited(productId).then(favoritado => {
         if (favoritado) {
-          removeFavorite(productId).then(() => {
+          removeFavorite(productId).then(res => {
+            if (res.error && res.error.includes("logado")) {
+              window.location.href = "/login-cliente";
+              return;
+            }
             btn.classList.remove("favoritado");
             showAlert("Produto removido dos favoritos!", "error");
           });
         } else {
-          addFavorite(productId).then(() => {
+          addFavorite(productId).then(res => {
+            if (res.error && res.error.includes("logado")) {
+              window.location.href = "/login-cliente";
+              return;
+            }
             btn.classList.add("favoritado");
             showAlert("Produto adicionado aos favoritos!");
           });
