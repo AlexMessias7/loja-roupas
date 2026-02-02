@@ -1044,26 +1044,30 @@ app.put('/admin/produtos/:id', upload.fields([
     if (req.body.deleteMainImage === 'on') {
       imageUrl = null;
     } else if (req.files?.image?.[0]) {
-      const result = await cloudinary.uploader.upload(req.files.image[0].path, {
-        folder: 'loja-roupas'
-      });
-      imageUrl = result.secure_url;
+      try {
+        const result = await cloudinary.uploader.upload(req.files.image[0].path, {
+          folder: 'loja-roupas'
+        });
+        imageUrl = result.secure_url;
+      } catch (uploadErr) {
+        console.error('Erro ao enviar imagem principal:', uploadErr.message);
+        throw new Error('Falha no upload da imagem principal');
+      }
     }
 
     // --- Imagens extras ---
     let extraImagesUrls = product.extraImages || [];
-    if (req.body.deleteExtraImages) {
-      const toDelete = Array.isArray(req.body.deleteExtraImages)
-        ? req.body.deleteExtraImages
-        : [req.body.deleteExtraImages];
-      extraImagesUrls = extraImagesUrls.filter(img => !toDelete.includes(img));
-    }
     if (Array.isArray(req.files?.extraImages)) {
       for (const file of req.files.extraImages) {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: 'loja-roupas'
-        });
-        extraImagesUrls.push(result.secure_url);
+        try {
+          const result = await cloudinary.uploader.upload(file.path, {
+            folder: 'loja-roupas'
+          });
+          extraImagesUrls.push(result.secure_url);
+        } catch (uploadErr) {
+          console.error('Erro ao enviar imagem extra:', uploadErr.message);
+          throw new Error('Falha no upload de imagem extra');
+        }
       }
     }
 
@@ -1112,7 +1116,7 @@ app.put('/admin/produtos/:id', upload.fields([
     console.error('Stack:', err.stack);
     console.error('Files:', req.files);
     console.error('Body:', req.body);
-    res.status(500).send('Erro ao atualizar produto: ' + err.message);
+    res.status(500).send('Erro ao atualizar produto: ' + err.message || 'Erro desconhecido');
   }
 });
 
