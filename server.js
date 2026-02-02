@@ -312,27 +312,39 @@ app.get('/login-cliente', (req, res) => {
   res.render('login-cliente'); // renderiza login-cliente.ejs
 });
 
-// rota POST para autenticar cliente
 app.post('/login-cliente', async (req, res) => {
   try {
     const { email, senha } = req.body;
+
+    // Validação básica
+    if (!email || !senha) {
+      console.warn("Login falhou: campos vazios");
+      return res.status(400).send("Preencha todos os campos");
+    }
+
+    // Busca cliente no banco
     const cliente = await Cliente.findOne({ email });
 
     if (!cliente) {
+      console.warn(`Login falhou: cliente não encontrado para o email ${email}`);
       return res.status(400).send("Cliente não encontrado");
     }
 
+    // Verifica senha
     const senhaValida = await bcrypt.compare(senha, cliente.senha);
     if (!senhaValida) {
+      console.warn(`Login falhou: senha incorreta para o email ${email}`);
       return res.status(400).send("Senha incorreta");
     }
 
-    // cria sessão exclusiva para cliente
+    // Cria sessão
     req.session.clienteId = cliente._id;
+    console.log(`Login bem-sucedido: cliente ${cliente._id}`);
     res.redirect('/area-cliente');
+
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Erro ao fazer login do cliente");
+    console.error("Erro ao fazer login do cliente:", err);
+    res.status(500).send("Erro interno ao fazer login do cliente");
   }
 });
 
@@ -1279,11 +1291,15 @@ app.get("/favoritos", async (req, res) => {
   }
 });
 
-// Adicionar favorito
+// Rota para adicionar favorito
 app.post("/api/favoritos/add", async (req, res) => {
-  if (!req.session.clienteId) return res.status(401).json({ error: "Não logado" });
+  // Proteção: só permite se o cliente estiver logado
+  if (!req.session.clienteId) {
+    return res.status(401).json({ error: "Você precisa estar logado para favoritar." });
+  }
 
   const { productId } = req.body;
+
   try {
     await Favorito.create({ userId: req.session.clienteId, productId });
     res.json({ success: true });
@@ -1295,9 +1311,12 @@ app.post("/api/favoritos/add", async (req, res) => {
 
 // Remover favorito
 app.post("/api/favoritos/remove", async (req, res) => {
-  if (!req.session.clienteId) return res.status(401).json({ error: "Não logado" });
+  if (!req.session.clienteId) {
+    return res.status(401).json({ error: "Você precisa estar logado para remover favoritos." });
+  }
 
   const { productId } = req.body;
+
   try {
     await Favorito.deleteOne({ userId: req.session.clienteId, productId });
     res.json({ success: true });
@@ -1309,10 +1328,16 @@ app.post("/api/favoritos/remove", async (req, res) => {
 
 // Verificar se produto está favoritado
 app.get("/api/favoritos/check/:id", async (req, res) => {
-  if (!req.session.clienteId) return res.json({ favoritado: false });
+  if (!req.session.clienteId) {
+    return res.json({ favoritado: false });
+  }
 
   try {
-    const favorito = await Favorito.findOne({ userId: req.session.clienteId, productId: req.params.id });
+    const favorito = await Favorito.findOne({
+      userId: req.session.clienteId,
+      productId: req.params.id
+    });
+
     res.json({ favoritado: !!favorito });
   } catch (err) {
     console.error("Erro ao verificar favorito:", err);
@@ -1320,15 +1345,16 @@ app.get("/api/favoritos/check/:id", async (req, res) => {
   }
 });
 
+// Listar todos os favoritos do usuário logado
 app.get("/api/favoritos/list", async (req, res) => {
   if (!req.session.clienteId) {
-    return res.status(401).json({ error: "Não logado" });
+    return res.status(401).json({ error: "Você precisa estar logado para ver seus favoritos." });
   }
 
   try {
     const favoritos = await Favorito
       .find({ userId: req.session.clienteId })
-      .populate("productId");
+      .populate("productId"); // carrega os dados completos do produto
 
     const produtos = favoritos.map(f => f.productId);
     res.json(produtos);

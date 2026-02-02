@@ -16,6 +16,13 @@ function inicializarFavoritos() {
 
     // Usamos onclick para evitar múltiplos listeners duplicados
     btn.onclick = () => {
+      // Proteção: só permite se o usuário estiver logado
+      if (!window.clienteLogado) {
+        showAlert("Você precisa estar logado para favoritar produtos.", "error");
+        window.location.href = "/login"; // opcional: redireciona para login
+        return;
+      }
+
       isFavorited(productId).then(favoritado => {
         if (favoritado) {
           removeFavorite(productId).then(() => {
@@ -41,7 +48,9 @@ window.inicializarFavoritos = inicializarFavoritos;
 
 // Funções auxiliares com backend
 function isFavorited(id) {
-  return fetch(`/api/favoritos/check/${id}`)
+  return fetch(`/api/favoritos/check/${id}`, {
+    credentials: "include" // envia cookies da sessão
+  })
     .then(res => res.json())
     .then(data => data.favoritado)
     .catch(() => false);
@@ -50,6 +59,7 @@ function isFavorited(id) {
 function addFavorite(id) {
   return fetch(`/api/favoritos/add`, {
     method: "POST",
+    credentials: "include", // envia cookies da sessão
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ productId: id })
   }).then(res => res.json());
@@ -58,6 +68,7 @@ function addFavorite(id) {
 function removeFavorite(id) {
   return fetch(`/api/favoritos/remove`, {
     method: "POST",
+    credentials: "include", // envia cookies da sessão
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ productId: id })
   }).then(res => res.json());
