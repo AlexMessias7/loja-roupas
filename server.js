@@ -861,6 +861,7 @@ app.post('/admin/produtos', upload.fields([
     console.log('--- INÍCIO DA CRIAÇÃO DO PRODUTO ---');
     console.log('Arquivos recebidos:', req.files);
     console.log('Dados recebidos:', req.body);
+    console.log('Imagem recebida:', req.files?.image?.[0]);
 
     // --- Upload da imagem principal ---
     let imageUrl = null;
