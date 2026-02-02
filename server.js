@@ -1028,12 +1028,16 @@ app.get('/pedido-confirmado', (req, res) => {
   res.render('pedido-confirmado', { numero });
 });
 
-// Atualizar produto
 app.put('/admin/produtos/:id', upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'extraImages', maxCount: 5 }
 ]), async (req, res) => {
   try {
+    console.log('--- INÍCIO DA ATUALIZAÇÃO DO PRODUTO ---');
+    console.log('ID do produto:', req.params.id);
+    console.log('Dados recebidos:', req.body);
+    console.log('Arquivos recebidos:', req.files);
+
     // Busca produto atual
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -1045,11 +1049,13 @@ app.put('/admin/produtos/:id', upload.fields([
     if (req.body.deleteMainImage === 'on') {
       imageUrl = null;
     } else if (req.files?.image?.[0]) {
+      console.log('Imagem principal recebida:', req.files.image[0]);
       try {
         const result = await cloudinary.uploader.upload(req.files.image[0].path, {
           folder: 'loja-roupas'
         });
         imageUrl = result.secure_url;
+        console.log('Imagem principal enviada com sucesso:', imageUrl);
       } catch (uploadErr) {
         console.error('Erro ao enviar imagem principal:', uploadErr.message);
         throw new Error('Falha no upload da imagem principal');
@@ -1058,13 +1064,21 @@ app.put('/admin/produtos/:id', upload.fields([
 
     // --- Imagens extras ---
     let extraImagesUrls = product.extraImages || [];
+    if (req.body.deleteExtraImages) {
+      const toDelete = Array.isArray(req.body.deleteExtraImages)
+        ? req.body.deleteExtraImages
+        : [req.body.deleteExtraImages];
+      extraImagesUrls = extraImagesUrls.filter(img => !toDelete.includes(img));
+    }
     if (Array.isArray(req.files?.extraImages)) {
       for (const file of req.files.extraImages) {
+        console.log('Imagem extra recebida:', file);
         try {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: 'loja-roupas'
           });
           extraImagesUrls.push(result.secure_url);
+          console.log('Imagem extra enviada com sucesso:', result.secure_url);
         } catch (uploadErr) {
           console.error('Erro ao enviar imagem extra:', uploadErr.message);
           throw new Error('Falha no upload de imagem extra');
@@ -1117,7 +1131,7 @@ app.put('/admin/produtos/:id', upload.fields([
     console.error('Stack:', err.stack);
     console.error('Files:', req.files);
     console.error('Body:', req.body);
-    res.status(500).send('Erro ao atualizar produto: ' + err.message || 'Erro desconhecido');
+    res.status(500).send('Erro ao atualizar produto: ' + (err.message || 'Erro desconhecido'));
   }
 });
 
