@@ -126,26 +126,19 @@ const cartSchema = new mongoose.Schema({
 
 const Cart = mongoose.model('Cart', cartSchema);
 
-// ---- Configuração do Multer ----
+// ---- Configuração do Multer + Cloudinary ----
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
 
+// Configuração do Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Configuração do Multer para usar Cloudinary
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'loja-roupas', // nome da pasta no Cloudinary
-    allowed_formats: ['jpg', 'png', 'jpeg'],
-  },
-});
-
-const upload = multer({ storage });
+// Multer salva temporário em /uploads
+const upload = multer({ dest: 'uploads/' });
 
 // modelo de pedido
 const pedidoSchema = new mongoose.Schema({
@@ -170,55 +163,76 @@ const pedidoSchema = new mongoose.Schema({
 const Pedido = mongoose.model('Pedido', pedidoSchema);
 
 // ---- Esquema do Produto ----
+const mongoose = require('mongoose');
+
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   originalPrice: { type: Number, required: true },
-  discountedPrice: { type: Number },
+  discountedPrice: { type: Number, default: 0 },
   description: { type: String, default: '' },
-  image: { type: String, default: null }, // URL do Cloudinary ou null
+
+  // Imagem principal (URL do Cloudinary)
+  image: { type: String, default: null },
+
+  // Categoria opcional
   category: { type: String, default: '' },
-  stock: { type: Number, default: 0 },
-  stockMax: { type: Number, required: true },
-  stockMin: { type: Number, required: true },
+
+  // Estoque
+  stock: { type: Number, default: 0 }, // estoque atual
+  stockMax: { type: Number, required: true }, // capacidade máxima
+  stockMin: { type: Number, required: true }, // mínimo aceitável
+
+  // Parcelamento
   maxInstallments: { type: Number, required: true },
   installmentValue: { type: Number, default: 0 },
+
+  // Gênero
   gender: { type: String, enum: ['Masculino', 'Feminino', 'Unissex'], required: true },
+
+  // Flags
   isFeatured: { type: Boolean, default: false },
   isOnSale: { type: Boolean, default: false },
+
+  // Tamanhos
   sizes: {
     type: [String],
-    enum: ['P', 'M', 'G', 'GG'], // Apenas permite tamanhos válidos
+    enum: ['P', 'M', 'G', 'GG'],
     default: [],
   },
-  extraImages: { type: [String], default: [] }, // URLs do Cloudinary
+
+  // Imagens adicionais (URLs do Cloudinary)
+  extraImages: { type: [String], default: [] },
 
   // Campos de avaliação
   comments: [
     {
-      user: String,
-      text: String,
-      rating: Number,
+      user: { type: String },
+      text: { type: String },
+      rating: { type: Number },
     },
   ],
   ratingAverage: { type: Number, default: 0 },
   ratingCount: { type: Number, default: 0 },
   recommendationPercentage: { type: Number, default: 0 },
+
+  // Campo calculado de desconto (opcional)
+  discountPercentage: { type: Number, default: 0 },
 });
 
 const Product = mongoose.model('Product', productSchema);
 
 // ---- Esquema de Entrada ----
 const entradaSchema = new mongoose.Schema({
-  codigo: String, // ex: ENTRADA-20260120-001
-  pedidoNumero: String,
+  codigo: { type: String }, // ex: ENTRADA-20260120-001
+  pedidoNumero: { type: String },
   data: { type: Date, default: Date.now },
   itens: [
     {
       produto: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-      quantidade: Number,
-      preco: Number,
-      desconto: Number,
-      total: Number,
+      quantidade: { type: Number },
+      preco: { type: Number },
+      desconto: { type: Number },
+      total: { type: Number },
     },
   ],
 });
@@ -847,49 +861,60 @@ app.post('/admin/produtos', upload.fields([
   { name: 'extraImages', maxCount: 3 }
 ]), async (req, res) => {
   try {
-    // Logs para depuração
     console.log('--- INÍCIO DA CRIAÇÃO DO PRODUTO ---');
     console.log('Arquivos recebidos:', req.files);
     console.log('Dados recebidos:', req.body);
 
-    // Trata imagens extras (Cloudinary retorna URL em file.path)
-    const extraImages = Array.isArray(req.files?.extraImages)
-      ? req.files.extraImages.map(file => file.path)
-      : [];
+    // --- Upload da imagem principal ---
+    let imageUrl = null;
+    if (req.files?.image?.[0]) {
+      const result = await cloudinary.uploader.upload(req.files.image[0].path, {
+        folder: 'loja-roupas'
+      });
+      imageUrl = result.secure_url;
+    }
 
-    // Trata imagem principal (se não enviada, fica null)
-    const image = req.files?.image?.[0]?.path || null;
+    // --- Upload das imagens extras ---
+    let extraImagesUrls = [];
+    if (Array.isArray(req.files?.extraImages)) {
+      for (const file of req.files.extraImages) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: 'loja-roupas'
+        });
+        extraImagesUrls.push(result.secure_url);
+      }
+    }
 
-    // Preço original (obrigatório)
+    // --- Preço original ---
     const originalPrice = parseFloat(req.body.originalPrice);
     if (isNaN(originalPrice)) {
       throw new Error('Preço original inválido');
     }
 
-    // Se não houver preço com desconto, assume o original
+    // --- Preço com desconto ---
     const discountedPrice = req.body.discountedPrice
       ? parseFloat(req.body.discountedPrice)
       : originalPrice;
 
-    // Parcelas (se não informado, assume 1)
+    // --- Parcelas ---
     const maxInstallments = parseInt(req.body.maxInstallments) || 1;
     const installmentValue = (discountedPrice / maxInstallments).toFixed(2);
 
-    // Trata tamanhos
+    // --- Tamanhos ---
     const sizes = Array.isArray(req.body.sizes)
       ? req.body.sizes
       : req.body.sizes
         ? [req.body.sizes]
         : [];
 
-    // Cria o produto
+    // --- Criar produto ---
     const product = new Product({
       name: req.body.name,
       originalPrice,
       discountedPrice,
       description: req.body.description || '',
-      image,              // URL do Cloudinary
-      extraImages,        // lista de URLs do Cloudinary
+      image: imageUrl,              // URL definitiva do Cloudinary
+      extraImages: extraImagesUrls, // lista de URLs do Cloudinary
       category: req.body.category || '',
       stockMax: req.body.stockMax ? parseInt(req.body.stockMax) : 0,
       stockMin: req.body.stockMin ? parseInt(req.body.stockMin) : 0,
@@ -902,16 +927,15 @@ app.post('/admin/produtos', upload.fields([
       discountPercentage: ((originalPrice - discountedPrice) / originalPrice) * 100
     });
 
-    // Validação de campos obrigatórios
+    // --- Validação de campos obrigatórios ---
     if (!product.name || !product.originalPrice || !product.gender) {
       throw new Error('Campos obrigatórios ausentes');
     }
 
-    // Salva no banco
+    // --- Salvar no banco ---
     await product.save();
 
     console.log('--- PRODUTO CRIADO COM SUCESSO ---');
-    // Redireciona para listagem
     res.redirect('/admin/produtos');
   } catch (err) {
     console.error('--- ERRO AO SALVAR PRODUTO ---');
@@ -1012,105 +1036,76 @@ app.put('/admin/produtos/:id', upload.fields([
   { name: 'extraImages', maxCount: 5 }
 ]), async (req, res) => {
   try {
-    // Logs para depuração
-    console.log('Atualizando produto com:', updatedProduct);
-    console.log('Imagem principal:', req.files?.image?.[0]);
-    console.log('Imagens extras:', req.files?.extraImages);
-
-    // Busca produto atual para poder manipular imagens existentes
+    // Busca produto atual
     const product = await Product.findById(req.params.id);
     if (!product) {
       throw new Error('Produto não encontrado para atualização');
     }
 
-    // Trata imagem principal (Cloudinary já retorna URL em file.path)
-    const image = req.files?.image?.[0]?.path || null;
+    // --- Imagem principal ---
+    let imageUrl = product.image;
+    if (req.body.deleteMainImage === 'on') {
+      imageUrl = null;
+    } else if (req.files?.image?.[0]) {
+      const result = await cloudinary.uploader.upload(req.files.image[0].path, {
+        folder: 'loja-roupas'
+      });
+      imageUrl = result.secure_url;
+    }
 
-    // Trata imagens extras
-    const extraImages = Array.isArray(req.files?.extraImages)
-      ? req.files.extraImages.map(file => file.path)
-      : product.extraImages;
+    // --- Imagens extras ---
+    let extraImagesUrls = product.extraImages || [];
+    if (req.body.deleteExtraImages) {
+      const toDelete = Array.isArray(req.body.deleteExtraImages)
+        ? req.body.deleteExtraImages
+        : [req.body.deleteExtraImages];
+      extraImagesUrls = extraImagesUrls.filter(img => !toDelete.includes(img));
+    }
+    if (Array.isArray(req.files?.extraImages)) {
+      for (const file of req.files.extraImages) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: 'loja-roupas'
+        });
+        extraImagesUrls.push(result.secure_url);
+      }
+    }
 
-    // Validação de preço
+    // --- Preço e parcelas ---
     const originalPrice = parseFloat(req.body.originalPrice);
     if (isNaN(originalPrice)) {
       throw new Error('Preço original inválido');
     }
-
     const discountedPrice = req.body.discountedPrice
       ? parseFloat(req.body.discountedPrice)
       : originalPrice;
-
     const maxInstallments = parseInt(req.body.maxInstallments) || 1;
     const installmentValue = (discountedPrice / maxInstallments).toFixed(2);
 
-    // Trata tamanhos
+    // --- Tamanhos ---
     const sizes = Array.isArray(req.body.sizes)
       ? req.body.sizes
       : req.body.sizes
         ? [req.body.sizes]
         : [];
 
-    // Monta objeto atualizado
-    const updatedProduct = {
-      name: req.body.name,
-      originalPrice,
-      discountedPrice,
-      description: req.body.description || '',
-      category: req.body.category || '',
-      stockMax: req.body.stockMax ? parseInt(req.body.stockMax) : 0,
-      stockMin: req.body.stockMin ? parseInt(req.body.stockMin) : 0,
-      isFeatured: !!req.body.isFeatured,
-      isOnSale: !!req.body.isOnSale,
-      maxInstallments,
-      installmentValue,
-      sizes,
-      gender: req.body.gender
-    };
+    // --- Atualizar produto ---
+    product.name = req.body.name;
+    product.originalPrice = originalPrice;
+    product.discountedPrice = discountedPrice;
+    product.description = req.body.description || '';
+    product.category = req.body.category || '';
+    product.stockMax = req.body.stockMax ? parseInt(req.body.stockMax) : 0;
+    product.stockMin = req.body.stockMin ? parseInt(req.body.stockMin) : 0;
+    product.isFeatured = !!req.body.isFeatured;
+    product.isOnSale = !!req.body.isOnSale;
+    product.maxInstallments = maxInstallments;
+    product.installmentValue = installmentValue;
+    product.sizes = sizes;
+    product.gender = req.body.gender;
+    product.image = imageUrl;
+    product.extraImages = extraImagesUrls;
 
-    // Validação de campos obrigatórios
-    if (!updatedProduct.name || !updatedProduct.originalPrice || !updatedProduct.gender) {
-      throw new Error('Campos obrigatórios ausentes');
-    }
-
-    // Excluir imagem principal se checkbox marcado
-    if (req.body.deleteMainImage === 'on') {
-      updatedProduct.image = null;
-    } else if (image) {
-      updatedProduct.image = image;
-    } else {
-      updatedProduct.image = product.image; // mantém a existente
-    }
-
-    // Excluir imagens adicionais + adicionar novas
-    if (req.body.deleteExtraImages) {
-      const toDelete = Array.isArray(req.body.deleteExtraImages)
-        ? req.body.deleteExtraImages
-        : [req.body.deleteExtraImages];
-
-      updatedProduct.extraImages = product.extraImages.filter(img => !toDelete.includes(img));
-
-      // Se enviou novas imagens, adiciona junto
-      if (extraImages.length > 0) {
-        updatedProduct.extraImages = [...updatedProduct.extraImages, ...extraImages];
-      }
-    } else if (extraImages.length > 0) {
-      updatedProduct.extraImages = extraImages;
-    } else {
-      updatedProduct.extraImages = product.extraImages; // mantém as existentes
-    }
-
-    console.log('Produto atualizado:', updatedProduct);
-
-    // Atualiza no banco
-    const result = await Product.findByIdAndUpdate(req.params.id, updatedProduct, {
-      new: true,
-      runValidators: true
-    });
-
-    if (!result) {
-      throw new Error('Produto não encontrado para atualização');
-    }
+    await product.save();
 
     console.log('--- PRODUTO ATUALIZADO COM SUCESSO ---');
     res.redirect('/admin/produtos');
