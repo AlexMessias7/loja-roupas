@@ -44,12 +44,28 @@ app.use((err, req, res, next) => {
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'", 'https://www.gstatic.com'],
-      styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://www.gstatic.com', "'unsafe-inline'"],
-      styleSrcElem: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://www.gstatic.com', "'unsafe-inline'"],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
-      scriptSrc: ["'self'", "'unsafe-inline'"]
+      defaultSrc: ["'self'"],
+      styleSrc: [
+        "'self'",
+        'https://fonts.googleapis.com',
+        'https://cdnjs.cloudflare.com',
+        "'unsafe-inline'"
+      ],
+      fontSrc: [
+        "'self'",
+        'https://fonts.gstatic.com',
+        'https://cdnjs.cloudflare.com'
+      ],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        'https://cdnjs.cloudflare.com'
+      ],
+      imgSrc: [
+        "'self'",
+        'data:',
+        'https://res.cloudinary.com'
+      ]
     }
   }
 }));
@@ -236,7 +252,7 @@ const entradaSchema = new mongoose.Schema({
 
 const Entrada = mongoose.model('Entrada', entradaSchema);
 
-module.exports = { Product, Entrada, upload };
+module.exports = { Product, Entrada, upload, cliente };
 
 // rota de cadastro
 app.post('/cadastro', async (req, res) => {
@@ -1153,15 +1169,6 @@ app.put('/admin/produtos/:id', upload.fields([
     console.error('Body:', req.body);
     res.status(500).send('Erro ao atualizar produto: ' + (err.message || 'Erro desconhecido'));
   }
-});
-
-app.post('/debug-upload', upload.fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'extraImages', maxCount: 5 }
-]), (req, res) => {
-  console.log('BODY:', req.body);
-  console.log('FILES:', req.files);
-  res.send('Upload recebido com sucesso');
 });
 
 // Rota para abrir o formulário de edição
