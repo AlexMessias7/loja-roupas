@@ -16,6 +16,7 @@ const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 const nodemailer = require('nodemailer');
 const helmet = require('helmet');
+const cors = require("cors");
 
 const app = express();
 
@@ -70,19 +71,25 @@ app.use(helmet({
   }
 }));
 
+// ---- Configuração de CORS ----
+// Isso garante que o frontend consiga enviar cookies para o backend
+app.use(cors({
+  origin: "https://loja-roupas-xzi3.onrender.com", // seu domínio Render
+  credentials: true
+}));
+
 // ---- Configuração de Sessões ----
-// Sessão precisa ser configurada antes de qualquer uso de `req.session`
 app.use(session({
-  secret: "segredo_unico_global", // use um único segredo forte
+  secret: "segredo_unico_global", // use um segredo forte e único
   resave: false,
-  saveUninitialized: false, // melhor não salvar sessões vazias
+  saveUninitialized: false, // não cria sessão vazia
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI,
   }),
   cookie: {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false, // true em produção com HTTPS
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
+    secure: process.env.NODE_ENV === "production", // true em produção (HTTPS)
     maxAge: 1000 * 60 * 60 * 24 // 1 dia
   }
 }));
