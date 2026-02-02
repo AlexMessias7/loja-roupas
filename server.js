@@ -131,6 +131,8 @@ const clienteSchema = new mongoose.Schema({
   criadoEm: { type: Date, default: Date.now }
 });
 
+const Cliente = mongoose.model('Cliente', clienteSchema);
+
 // ---- Esquema do Carrinho ----
 const cartSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
