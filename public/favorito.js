@@ -18,22 +18,12 @@ function inicializarFavoritos() {
     btn.onclick = () => {
       isFavorited(productId).then(favoritado => {
         if (favoritado) {
-          removeFavorite(productId).then(res => {
-            if (res.error && res.error.includes("logado")) {
-              showAlert("Você precisa estar logado para remover favoritos.", "error");
-              window.location.href = "/login-cliente";
-              return;
-            }
+          removeFavorite(productId).then(() => {
             btn.classList.remove("favoritado");
             showAlert("Produto removido dos favoritos!", "error");
           });
         } else {
-          addFavorite(productId).then(res => {
-            if (res.error && res.error.includes("logado")) {
-              showAlert("Você precisa estar logado para favoritar produtos.", "error");
-              window.location.href = "/login-cliente";
-              return;
-            }
+          addFavorite(productId).then(() => {
             btn.classList.add("favoritado");
             showAlert("Produto adicionado aos favoritos!");
           });
@@ -52,7 +42,7 @@ window.inicializarFavoritos = inicializarFavoritos;
 // Funções auxiliares com backend
 function isFavorited(id) {
   return fetch(`/api/favoritos/check/${id}`, {
-    credentials: "include" // envia cookies da sessão
+    credentials: "include" // mantém envio de cookies da sessão
   })
     .then(res => res.json())
     .then(data => data.favoritado)

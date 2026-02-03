@@ -1279,14 +1279,9 @@ app.get('/resultados', async (req, res) => {
 
 // Rota para renderizar a página de favoritos
 app.get("/favoritos", async (req, res) => {
-  if (!req.session.clienteId) {
-    console.warn("Tentativa de acesso à favoritos sem login.");
-    return res.redirect("/login-cliente");
-  }
-
   try {
     const favoritos = await Favorito
-      .find({ userId: req.session.clienteId })
+      .find({ userId: req.session.clienteId }) // se não houver clienteId, retorna vazio
       .populate("productId");
 
     const produtos = favoritos.map(f => f.productId);
@@ -1299,11 +1294,6 @@ app.get("/favoritos", async (req, res) => {
 
 // Rota para adicionar favorito
 app.post("/api/favoritos/add", async (req, res) => {
-  // Proteção: só permite se o cliente estiver logado
-  if (!req.session.clienteId) {
-    return res.status(401).json({ error: "Você precisa estar logado para favoritar." });
-  }
-
   const { productId } = req.body;
 
   try {
@@ -1317,10 +1307,6 @@ app.post("/api/favoritos/add", async (req, res) => {
 
 // Remover favorito
 app.post("/api/favoritos/remove", async (req, res) => {
-  if (!req.session.clienteId) {
-    return res.status(401).json({ error: "Você precisa estar logado para remover favoritos." });
-  }
-
   const { productId } = req.body;
 
   try {
@@ -1334,10 +1320,6 @@ app.post("/api/favoritos/remove", async (req, res) => {
 
 // Verificar se produto está favoritado
 app.get("/api/favoritos/check/:id", async (req, res) => {
-  if (!req.session.clienteId) {
-    return res.json({ favoritado: false });
-  }
-
   try {
     const favorito = await Favorito.findOne({
       userId: req.session.clienteId,
@@ -1351,16 +1333,12 @@ app.get("/api/favoritos/check/:id", async (req, res) => {
   }
 });
 
-// Listar todos os favoritos do usuário logado
+// Listar todos os favoritos
 app.get("/api/favoritos/list", async (req, res) => {
-  if (!req.session.clienteId) {
-    return res.status(401).json({ error: "Você precisa estar logado para ver seus favoritos." });
-  }
-
   try {
     const favoritos = await Favorito
       .find({ userId: req.session.clienteId })
-      .populate("productId"); // carrega os dados completos do produto
+      .populate("productId");
 
     const produtos = favoritos.map(f => f.productId);
     res.json(produtos);
