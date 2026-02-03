@@ -16,7 +16,6 @@ const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 const nodemailer = require('nodemailer');
 const helmet = require('helmet');
-const cors = require("cors");
 
 const app = express();
 
@@ -70,10 +69,6 @@ app.use(helmet({
     }
   }
 }));
-
-// ---- Configuração de CORS ----
-// Isso garante que o frontend consiga enviar cookies para o backend
-app.use(cors());
 
 // ---- Configuração de Sessões ----
 app.use(session({
