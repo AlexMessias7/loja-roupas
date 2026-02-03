@@ -73,10 +73,7 @@ app.use(helmet({
 
 // ---- Configuração de CORS ----
 // Isso garante que o frontend consiga enviar cookies para o backend
-app.use(cors({
-  origin: "https://loja-roupas-xzi3.onrender.com", // seu domínio Render
-  credentials: true
-}));
+app.use(cors());
 
 // ---- Configuração de Sessões ----
 app.use(session({
