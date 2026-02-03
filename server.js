@@ -297,12 +297,17 @@ app.post('/cadastro', async (req, res) => {
 });
 
 app.get('/area-cliente', async (req, res) => {
-  if (!req.session.clienteId) {
-    return res.redirect('/login-cliente');
-  }
+  try {
+    if (!req.session.clienteId) {
+      return res.redirect('/login-cliente');
+    }
 
-  const cliente = await Cliente.findById(req.session.clienteId);
-  res.render('area-cliente', { cliente });
+    const cliente = await Cliente.findById(req.session.clienteId);
+    res.render('area-cliente', { cliente });
+  } catch (err) {
+    console.error("Erro ao carregar área do cliente:", err);
+    res.status(500).send("Erro interno ao carregar área do cliente");
+  }
 });
 
 app.get('/logout-cliente', (req, res) => {
