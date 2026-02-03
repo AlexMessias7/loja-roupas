@@ -72,17 +72,17 @@ app.use(helmet({
 
 // ---- Configuração de Sessões ----
 app.use(session({
-  secret: "segredo_unico_global", // use um segredo forte e único
+  secret: "segredo_unico_global",
   resave: false,
-  saveUninitialized: false, // não cria sessão vazia
+  saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI,
   }),
   cookie: {
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
-    secure: process.env.NODE_ENV === "production", // true em produção (HTTPS)
-    maxAge: 1000 * 60 * 60 * 24 // 1 dia
+    sameSite: "lax",   // mais permissivo
+    secure: false,     // aceita mesmo sem HTTPS
+    maxAge: 1000 * 60 * 60 * 24
   }
 }));
 
